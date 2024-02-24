@@ -17,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class Tile {
 
+	private Unit unit;
+
 	@JsonIgnore
 	private static ObjectMapper mapper = new ObjectMapper(); // Jackson Java Object Serializer, is used to read java objects from a file
 	
@@ -51,6 +53,14 @@ public class Tile {
 		this.height = height;
 		this.tilex = tilex;
 		this.tiley = tiley;
+	}
+
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
 	}
 	public List<String> getTileTextures() {
 		return tileTextures;
