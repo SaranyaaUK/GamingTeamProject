@@ -1,6 +1,14 @@
 package structures;
+
 import structures.basic.Grid;
 import structures.basic.Player;
+import structures.basic.Tile;
+import structures.basic.Unit;
+import utils.CombatResult;
+import utils.CombatResults;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class holds information about the ongoing game.
@@ -12,8 +20,10 @@ public class GameState {
 	public boolean something = false; // Example flag for additional state tracking
 	private Grid grid; // Represents the game board
 	private Player player1; // Human player
-	private Player player2; // AI or second human player
+	private Player player2; // AI player
 	private int turn; // Tracks the current game turn
+
+	private Map<Unit,Tile> unitTileMap = new HashMap<>();
 
 	// Constructors
 	public GameState() {
@@ -92,6 +102,95 @@ public class GameState {
 		if (player2 != null) {
 			player2.setMana(this.turn + 1);
 		}
+	}
+
+	/**
+	 * Updates the association between a unit and a tile, handling occupied tiles and triggering events.
+	 *
+	 * @param unit The unit to associate with a tile.
+	 * @param tile The tile to associate with the unit.
+	 */
+	public void updateUnitTileAssociation(Unit unit, Tile tile) {
+		// Check if the target tile is already occupied by another unit.
+		Tile currentTile = unitTileMap.get(unit);
+		if (currentTile != null && currentTile.equals(tile)) {
+			// The unit is already at the specified tile, so no action is needed.
+			return;
+		}
+
+		Unit occupyingUnit = findUnitByTile(tile);
+		if (occupyingUnit != null && !occupyingUnit.equals(unit)) {
+			// The tile is occupied by another unit, handle according to your game's rules.
+			handleOccupiedTile(unit, occupyingUnit, tile);
+		} else {
+			// If moving to a new tile, remove the unit from its current tile.
+			if (currentTile != null) {
+				currentTile.setUnit(null); // Assuming Tile.setUnit(null) clears the tile's unit.
+			}
+
+			// Place the unit on the new tile and update its position.
+			tile.setUnit(unit);
+			unit.setPositionByTile(tile);
+			unitTileMap.put(unit, tile);
+
+			// Trigger any events related to the tile.
+			triggerTileEvents(unit, tile);
+		}
+	}
+
+	private void triggerTileEvents(Unit unit, Tile tile) {
+		// Implement logic for environmental effects, items, or other triggers.
+		// Example: if (tile.hasTrap()) applyTrapEffect(unit);
+	}
+
+	/**
+	 * Finds the unit occupying a specific tile.
+	 *
+	 * @param tile The tile to check for an occupying unit.
+	 * @return The unit occupying the tile, or null if the tile is unoccupied.
+	 */
+	private Unit findUnitByTile(Tile tile) {
+		return unitTileMap.entrySet().stream()
+				.filter(entry -> entry.getValue().equals(tile))
+				.map(Map.Entry::getKey)
+				.findFirst()
+				.orElse(null);
+	}
+
+	private void handleOccupiedTile(Unit movingUnit, Unit occupyingUnit, Tile tile) {
+		CombatResult result = CombatResults.initiateCombat(movingUnit, occupyingUnit);
+
+		switch (result) {
+			case MOVING_UNIT_WINS:
+				removeUnitFromGame(occupyingUnit); // Use GameState's method
+				tile.setUnit(movingUnit);
+				movingUnit.setPositionByTile(tile);
+				unitTileMap.put(movingUnit, tile);
+				break;
+			case OCCUPYING_UNIT_WINS:
+				removeUnitFromGame(movingUnit);
+				break;
+			case DRAW:
+				CombatResults.handleCombatDraw(movingUnit, occupyingUnit); // Static method call
+				break;
+		}
+	}
+
+
+	public void removeUnitFromGame(Unit unit) {
+		// Logic to remove the unit from the game
+		Tile tile = unitTileMap.get(unit);
+		if(tile != null) {
+			tile.setUnit(null);
+		}
+		unitTileMap.remove(unit);
+		// Update frontend if necessary
+	}
+
+
+	// Method to get a tile by unit, useful for various game logic scenarios
+	public Tile getTileByUnit(Unit unit) {
+		return unitTileMap.get(unit);
 	}
 
 }
