@@ -5,13 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import akka.actor.ActorRef;
 import play.libs.Json;
-import structures.basic.Card;
-import structures.basic.EffectAnimation;
-import structures.basic.Player;
-import structures.basic.Tile;
-import structures.basic.Unit;
-import structures.basic.UnitAnimation;
-import structures.basic.UnitAnimationType;
+import structures.basic.*;
 
 
 /**
@@ -28,6 +22,33 @@ public class BasicCommands {
 	// An alternative class with a 'tell' implementation can be given if writing unit tests
 	// and need to have a null ActorRef. This should be null during normal operation.
 	public static DummyTell altTell = null;
+
+
+	/**
+	 * Draws the entire game grid on the front-end.
+	 * Iterates through each tile in the grid and sends a command to draw it.
+	 * The visualisation mode can be adjusted based on game logic (e.g., normal, highlighted).
+	 *
+	 * @param out The ActorRef for sending messages to the front-end.
+	 * @param grid The Grid object containing the tiles to be drawn.
+	 */
+	public static void drawGrid(ActorRef out, Grid grid) {
+		// Assuming default visualisation mode is 0 for all tiles initially
+		int defaultMode = 0;
+
+		// Get the 2D array of tiles from the Grid object
+		Tile[][] tiles = grid.getGrid();
+
+		// Iterate through each tile in the grid
+		for (int x = 0; x < tiles.length; x++) {
+			for (int y = 0; y < tiles[x].length; y++) {
+				Tile tile = tiles[x][y];
+
+				// Use the drawTile method to draw each tile on the front-end
+				drawTile(out, tile, defaultMode);
+			}
+		}
+	}
 	
 	
 	/**
