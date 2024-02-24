@@ -7,9 +7,6 @@ import structures.GameState;
 import structures.basic.*;
 import utils.AppConstants;
 
-import java.util.Collection;
-import java.util.List;
-
 /**
  * Indicates that both the core game loop in the browser is starting, meaning
  * that it is ready to recieve commands from the back-end.
@@ -25,33 +22,30 @@ public class Initalize implements EventProcessor {
 
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
-		// Initialize the game grid
-		Grid grid = new Grid(AppConstants.gridWidth, AppConstants.gridHeight);
-		gameState.setGrid(grid);
-
-		// Player creation
-		Player humanPlayer = new Player(/* Human player specifics, including card manager and avatar */);
-		Player aiPlayer = new Player(/* AI player specifics, including card manager and avatar */);
-		gameState.setPlayer1(humanPlayer);
-		gameState.setPlayer2(aiPlayer);
-
-		// Initialize players' avatars and position them
+		initializeGameGrid(gameState);
+		createPlayers(gameState);
 		positionPlayersAvatars(gameState, out);
-
-		// Front-end communications
-		BasicCommands.drawGrid(out, grid);
-		// Draw units (avatars) and set health, mana, etc.
-		drawUnitsAndSetAttributes(gameState, out);
-
-		// Drawing the initial hand cards for both players
-		drawInitialHandCards(gameState, out);
-
-		// Mark the game as initialized
-		gameState.gameInitialized = true;
-
-		// Further game state attributes initialization as needed
+		communicateInitialState(out, gameState);
+		gameState.setGameInitialized(true);
 	}
 
+	private void initializeGameGrid(GameState gameState) {
+		Grid grid = new Grid(AppConstants.gridWidth, AppConstants.gridHeight);
+		gameState.setGrid(grid);
+	}
+
+	private void createPlayers(GameState gameState) {
+		Player humanPlayer = new Player(AppConstants.INITIAL_HEALTH, AppConstants.INITIAL_MANA);
+		Player aiPlayer = new Player(AppConstants.INITIAL_HEALTH, AppConstants.INITIAL_MANA);
+		gameState.setPlayer1(humanPlayer);
+		gameState.setPlayer2(aiPlayer);
+	}
+
+	private void communicateInitialState(ActorRef out, GameState gameState) {
+		BasicCommands.drawGrid(out, gameState.getGrid());
+		drawUnitsAndSetAttributes(gameState, out);
+		drawInitialHandCards(gameState, out);
+	}
 	private void positionPlayersAvatars(GameState gameState, ActorRef out) {
 		// Assuming the Grid class has a method to retrieve a Tile by grid coordinates
 		Tile humanAvatarTile = gameState.getGrid().getTile(2, 3);
@@ -69,24 +63,28 @@ public class Initalize implements EventProcessor {
 		// Logic to associate the avatars with their tiles should be handled here
 		// This might involve updating the GameState or a separate manager to track which units are on which tiles
 		// For simplicity, this is conceptual and needs to be implemented according to your game's architecture
-		associateAvatarWithTile(humanAvatar, humanAvatarTile);
-		associateAvatarWithTile(aiAvatar, aiAvatarTile);
+		associateAvatarWithTile(humanAvatar, humanAvatarTile,gameState);
+		associateAvatarWithTile(aiAvatar, aiAvatarTile,gameState);
+
+		// Optionally, you can draw the avatars on the frontend using the ActorRef
+		BasicCommands.drawUnit(out, humanAvatar, humanAvatarTile);
+		BasicCommands.drawUnit(out, aiAvatar, aiAvatarTile);
 	}
 
 	/**
 	 * Conceptual method to associate a Unit (avatar) with a Tile.
 	 * Implement this logic according to your game's architecture.
 	 */
-	private void associateAvatarWithTile(Unit avatar, Tile tile) {
+	private void associateAvatarWithTile(Unit avatar, Tile tile,GameState gameState) {
 		// Set the Unit on the Tile
 		tile.setUnit(avatar);
 
 		// Update the Unit's position to match the Tile's coordinates
 		avatar.setPositionByTile(tile);
 
-		// Optionally, if you need to update the game state or any global tracking of units and their positions,
-		// you would do so here. For example:
-		// gameState.updateUnitTileAssociation(avatar, tile);
+		// Update the global game state or any tracking mechanism you have for unit-tile associations
+		// This assumes you have a gameState object available in this context
+		gameState.updateUnitTileAssociation(avatar, tile);
 	}
 
 	private void drawUnitsAndSetAttributes(GameState gameState, ActorRef out) {
@@ -101,19 +99,25 @@ public class Initalize implements EventProcessor {
 		BasicCommands.setUnitHealth(out, gameState.getPlayer1().getAvatar(), 20);
 		BasicCommands.setUnitHealth(out, gameState.getPlayer2().getAvatar(), 20);
 
-		// Set the avatars' attack if needed
-		// Example: BasicCommands.setUnitAttack(out, gameState.getPlayer1().getAvatar(), /* Avatar's attack */);
+		// Example: Set the avatars' attack, assuming a method or attribute exists to get this value
+		// For demonstration, setting arbitrary attack values. Replace these with actual game logic.
+		BasicCommands.setUnitAttack(out, gameState.getPlayer1().getAvatar(), 5); // Example attack value for Player 1's avatar
+		BasicCommands.setUnitAttack(out, gameState.getPlayer2().getAvatar(), 5); // Example attack value for Player 2's avatar
 
 		// Set players' health to 20 and mana to turn + 1
+		// Assuming Player class has methods setHealth and setMana for setting health and mana
+		gameState.getPlayer1().setHealth(20);
+		gameState.getPlayer2().setHealth(20);
+		gameState.getPlayer1().setMana(currentTurn + 1);
+		gameState.getPlayer2().setMana(currentTurn + 1);
+
+		// Communicate the updated health and mana values to the front-end
 		BasicCommands.setPlayer1Health(out, gameState.getPlayer1());
 		BasicCommands.setPlayer2Health(out, gameState.getPlayer2());
-
-		// Mana is set to currentTurn + 1. Ensure this logic aligns with your game's turn management.
 		BasicCommands.setPlayer1Mana(out, gameState.getPlayer1());
 		BasicCommands.setPlayer2Mana(out, gameState.getPlayer2());
-
-		// If avatar animations are needed, handle them here
 	}
+
 
 
 	private void drawInitialHandCards(GameState gameState, ActorRef out) {
