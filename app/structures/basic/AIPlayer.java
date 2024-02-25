@@ -1,23 +1,53 @@
 package structures.basic;
 
-// Import any packages as needed
+
+import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
 
 /**
- * Help of the GameLogic class goes here
+ * A basic representation of the AI Player. AI player
+ * extends from the player.
+ * 
+ * AI player related decision logic goes here.
+ * 
+ * @author Dr. Richard McCreadie
  *
  */
 
 public class AIPlayer extends Player {
 
+    public AIPlayer() {
+        super();
+        this.setAvatar(loadAvatar());
+    }
+
+    public AIPlayer(int health, int mana) {
+        super(health, mana);
+        this.setCardManager(new CardManager(false));
+        this.setAvatar(loadAvatar());
+    }
+    
+    @Override
     /*
-     * Signature
-     * 
-     * 
-     * Methods
-     * 
-     * // Take required information from the GameState
-     * 
-     * String getAvatarConfig()
-     * 
-     */
+	 *  Get the avatar's configuration file
+	 */
+    public String getAvatarConfig() {
+        return StaticConfFiles.aiAvatar;
+    }
+
+    /*
+	 *  Loads the avatar using the config file
+	 */
+    private Unit loadAvatar() {
+        int aiAvatarID = getAvatarID(); // This assumes avatars are uniquely identified
+        return BasicObjectBuilders.loadUnit(getAvatarConfig(), aiAvatarID, Unit.class);
+    }
+    
+    /*
+	 *  @returns  A unique id to identify the avatar
+	 */
+	public int getAvatarID() {
+		return 42;
+	}
+
 }

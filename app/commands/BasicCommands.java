@@ -1,11 +1,21 @@
 package commands;
 
+import java.util.List;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import akka.actor.ActorRef;
 import play.libs.Json;
-import structures.basic.*;
+import structures.GameState;
+import structures.basic.Card;
+import structures.basic.EffectAnimation;
+import structures.basic.Grid;
+import structures.basic.Player;
+import structures.basic.Tile;
+import structures.basic.Unit;
+import structures.basic.UnitAnimation;
+import structures.basic.UnitAnimationType;
 
 
 /**
@@ -23,34 +33,6 @@ public class BasicCommands {
 	// and need to have a null ActorRef. This should be null during normal operation.
 	public static DummyTell altTell = null;
 
-
-	/**
-	 * Draws the entire game grid on the front-end.
-	 * Iterates through each tile in the grid and sends a command to draw it.
-	 * The visualisation mode can be adjusted based on game logic (e.g., normal, highlighted).
-	 *
-	 * @param out The ActorRef for sending messages to the front-end.
-	 * @param grid The Grid object containing the tiles to be drawn.
-	 */
-	public static void drawGrid(ActorRef out, Grid grid) {
-		// Assuming default visualisation mode is 0 for all tiles initially
-		int defaultMode = 0;
-
-		// Get the 2D array of tiles from the Grid object
-		Tile[][] tiles = grid.getGrid();
-
-		// Iterate through each tile in the grid
-		for (int x = 0; x < tiles.length; x++) {
-			for (int y = 0; y < tiles[x].length; y++) {
-				Tile tile = tiles[x][y];
-
-				// Use the drawTile method to draw each tile on the front-end
-				drawTile(out, tile, defaultMode);
-			}
-		}
-	}
-	
-	
 	/**
 	 * You can consider the contents of the user’s browser window a canvas that can be drawn upon. drawTile will draw 
 	 * the image of a board tile on the board. This command takes as input a Tile object and a visualisation mode (an 
@@ -433,6 +415,83 @@ public class BasicCommands {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Draws the entire game grid on the front-end.
+	 * Iterates through each tile in the grid and sends a command to draw it.
+	 * The visualisation mode can be adjusted based on game logic (e.g., normal, highlighted).
+	 *
+	 * @param out The ActorRef for sending messages to the front-end.
+	 * @param grid The Grid object containing the tiles to be drawn.
+	 */
+	public static void drawGrid(ActorRef out, Grid grid) {
+		// Assuming default visualisation mode is 0 for all tiles initially
+		int defaultMode = 0;
+
+		// Get the 2D array of tiles from the Grid object
+		Tile[][] tiles = grid.getBoardTiles();
+
+		// Iterate through each tile in the grid
+		for (int x = 0; x < tiles.length; x++) {
+			for (int y = 0; y < tiles[x].length; y++) {
+				Tile tile = grid.getTile(x+1,y+1);
+				// Use the drawTile method to draw each tile on the front-end
+				BasicCommands.drawTile(out, tile, defaultMode);
+			}
+		}
+	}
+
+	public static void drawHandCards(List<Card> handCards, ActorRef out) {
+		// Assuming visualization mode 0 for the initial state of the cards
+		int mode = 0; // Example visualization mode, adjust based on game's logic
+
+		int position = 1; // Start position from 1
+		for (Card card : handCards) {
+				BasicCommands.drawCard(out, card, position, mode);
+				position++; // Increment position for next card
+		}
+	}
+
+	// Helper methods for other front-end communication
+	
+	/*
+	 *  Used by the Initialise event to draw the player's avatar and its statistics
+	 */
+	public static void drawUnitsAndSetAttributes(GameState gameState, ActorRef out) {
+		Player humanPlayer = gameState.getHumanPlayer();
+		Player aiPlayer = gameState.getAIPlayer();
+		Player currentPlayer = gameState.getCurrentPlayer();
+		Unit humanAvatar = humanPlayer.getAvatar();
+		Unit aiAvatar = aiPlayer.getAvatar();
+
+		// Draw units (avatars) for both players
+		BasicCommands.drawUnit(out, humanAvatar, gameState.getGrid().getTile(2, 3));
+		BasicCommands.drawUnit(out, aiAvatar, gameState.getGrid().getTile(8, 3));
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// Set the avatars' health to 20 for both players
+		BasicCommands.setUnitHealth(out, humanAvatar, GameState.INITIAL_HEALTH);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, aiAvatar, GameState.INITIAL_HEALTH);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// Set the avatars' attack, 
+		BasicCommands.setUnitAttack(out, humanAvatar, GameState.INITIAL_ATTACK);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		
+		BasicCommands.setUnitAttack(out, aiAvatar, GameState.INITIAL_ATTACK);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// Communicate the updated health and mana values to the front-end
+		BasicCommands.setPlayer1Health(out, humanPlayer);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setPlayer2Health(out, aiPlayer);
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setPlayer1Mana(out, currentPlayer);
 	}
 	
 }
