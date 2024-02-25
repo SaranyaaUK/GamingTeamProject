@@ -1,0 +1,5 @@
+[0m[[0m[31merror[0m] [0m[0mD:\LocalCheck\ITSD-DT2023-24-Template\ITSD-DT2023-24-Template\app\structures\basic\AIPlayer.java:49:1: getAvatarID() in structures.basic.AIPlayer cannot override getAvatarID() in structures.basic.Player[0m
+[0m[[0m[31merror[0m] [0m[0m  attempting to assign weaker access privileges; was public[0m
+[0m[[0m[31merror[0m] [0m[0mprivate int getAvatarID() {[0m
+[0m[[0m[31merror[0m] [0m[0m		return 42;[0m
+[0m[[0m[31merror[0m] [0m[0m	}[0m

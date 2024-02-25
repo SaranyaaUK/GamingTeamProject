@@ -1,0 +1,36 @@
+[0m[[0m[0mdebug[0m] [0m[0mjavaOptions: Vector()[0m
+[0m[[0m[0mdebug[0m] [0m[0mForking tests - parallelism = false[0m
+[0m[[0m[0mdebug[0m] [0m[0mCreate a single-thread test executor[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunner for com.novocode.junit.JUnitFramework produced 3 initial tasks for 3 tests.[0m
+[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(PlayerTest, sbt.ForkMain$AnnotatedFingerscan@7c34261b, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run started[0m[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerAvatarConfig[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerAvatarConfig[0m finished, took 0.942 sec[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerStatics[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerStatics[0m finished, took 0.084 sec[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerCardManager[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerCardManager[0m finished, took 0.02 sec[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerAvatar[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mPlayerTest[0m.[36mtestPlayerAvatar[0m finished, took 0.032 sec[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run finished: [0m[34m0 failed[0m[34m, [0m[34m0 ignored[0m[34m, 4 total, 1.099s[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 4 events.[0m
+[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(InitalizationTest, sbt.ForkMain$AnnotatedFingerscan@49ef69b2, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run started[0m[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mInitalizationTest[0m.[36mcheckInitalized[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mInitalizationTest[0m.[36mcheckInitalized[0m finished, took 0.017 sec[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run finished: [0m[34m0 failed[0m[34m, [0m[34m0 ignored[0m[34m, 1 total, 0.017s[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 1 events.[0m
+[0m[[0m[0mdebug[0m] [0m[0m  Running TaskDef(GridTest, sbt.ForkMain$AnnotatedFingerscan@54da5e3c, false, [SuiteSelector])[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run started[0m[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mGridTest[0m.[36mtestGetTiles[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mGridTest[0m.[36mtestGetTiles[0m finished, took 0.071 sec[0m
+[0m[[0m[0minfo[0m] [0m[0mTest [33mGridTest[0m.[36mtestGetBoardTiles[0m started[0m
+[0m[[0m[0mdebug[0m] [0m[0mTest [33mGridTest[0m.[36mtestGetBoardTiles[0m finished, took 0.01 sec[0m
+[0m[[0m[0minfo[0m] [0m[0m[34mTest run finished: [0m[34m0 failed[0m[34m, [0m[34m0 ignored[0m[34m, 2 total, 0.084s[0m[0m
+[0m[[0m[0mdebug[0m] [0m[0m    Produced 0 nested tasks and 2 events.[0m
+[0m[[0m[0mdebug[0m] [0m[0mSummary for JUnit not available.[0m
+[0m[[0m[0minfo[0m] [0m[0mPassed: Total 7, Failed 0, Errors 0, Passed 7[0m
+[0m[[0m[0mdebug[0m] [0m[0mPassed tests:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	GridTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	InitalizationTest[0m
+[0m[[0m[0mdebug[0m] [0m[0m	PlayerTest[0m

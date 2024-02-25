@@ -1,8 +1,8 @@
 assets/
-target/
+# target/
 .idea/
 .vscode/
 .eclipse/
-bin/
+# bin/
 .settings/
 **/application.log
