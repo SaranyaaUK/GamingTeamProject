@@ -1,5 +1,5 @@
 assets/
-# target/
+target/
 .idea/
 .vscode/
 .eclipse/

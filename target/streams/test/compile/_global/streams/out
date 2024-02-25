@@ -1,8 +1,0 @@
-[0m[[0m[31merror[0m] [0m[0mD:\LocalCheck\ITSD-DT2023-24-Template\ITSD-DT2023-24-Template\test\InitalizationTest.java:43:1: cannot find symbol[0m
-[0m[[0m[31merror[0m] [0m[0m  symbol:   variable gameInitalised[0m
-[0m[[0m[31merror[0m] [0m[0m  location: variable gameState of type structures.GameState[0m
-[0m[[0m[31merror[0m] [0m[0mgameState.gameInitalised[0m
-[0m[[0m[31merror[0m] [0m[0mD:\LocalCheck\ITSD-DT2023-24-Template\ITSD-DT2023-24-Template\test\InitalizationTest.java:49:1: cannot find symbol[0m
-[0m[[0m[31merror[0m] [0m[0m  symbol:   variable gameInitalised[0m
-[0m[[0m[31merror[0m] [0m[0m  location: variable gameState of type structures.GameState[0m
-[0m[[0m[31merror[0m] [0m[0mgameState.gameInitalised[0m
