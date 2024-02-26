@@ -29,6 +29,11 @@ public class Tile {
 	int tiley;
 	
 	private Unit unit;
+	// Represent tile highlight mode 
+	// 0 - Normal
+	// 1 - White
+	// 2 - Red
+	private int tileMode;
 
 	public Tile() {}
 	
@@ -105,6 +110,14 @@ public class Tile {
 		this.unit = unit;
 	}
 
+	public int getTileMode() {
+		return tileMode;
+	}
+
+	public void setTileMode(int tileMode) {
+		this.tileMode = tileMode;
+	}
+
 	/**
 	 * Loads a tile from a configuration file
 	 * parameters.
@@ -116,6 +129,7 @@ public class Tile {
 		try {
 			Tile tile = mapper.readValue(new File(configFile), Tile.class);
 			tile.setUnit(null);
+			tile.setTileMode(0);
 			return tile;
 		} catch (Exception e) {
 			e.printStackTrace();

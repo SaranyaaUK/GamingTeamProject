@@ -16,6 +16,7 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.UnitAnimation;
 import structures.basic.UnitAnimationType;
+import utils.TilesGenerator;
 
 
 /**
@@ -442,12 +443,10 @@ public class BasicCommands {
 		}
 	}
 
-	public static void drawHandCards(List<Card> handCards, ActorRef out) {
-		// Assuming visualization mode 0 for the initial state of the cards
-		int mode = 0; // Example visualization mode, adjust based on game's logic
-
+	public static void drawHandCards(List<Card> handCards, ActorRef out, int mode) {
 		int position = 1; // Start position from 1
 		for (Card card : handCards) {
+				card.getMiniCard().setIndex(mode);
 				BasicCommands.drawCard(out, card, position, mode);
 				position++; // Increment position for next card
 		}
@@ -494,4 +493,45 @@ public class BasicCommands {
 		BasicCommands.setPlayer1Mana(out, currentPlayer);
 	}
 	
+	/*
+	 *  Dehighlight any highlighted card
+	 *  Used in highlightsAfterCardClick method
+	 */
+    public static void dehighlightCards(GameState gameState, ActorRef out) {
+    	BasicCommands.drawHandCards(gameState.getCurrentPlayer().getMyHandCards(), out, 0);
+    }
+    
+    /*
+     *  Highlight clicked cards
+     */
+    public static void highlightClickedCard(GameState gameState, ActorRef out) {
+    	Card clickedCard = gameState.getClickedCard();
+		clickedCard.getMiniCard().setIndex(1); // Sets the animations to play in the minicard
+		BasicCommands.drawCard(out, clickedCard, gameState.getHandPosition(), 1);
+    }
+	
+    /*
+     * Highlight of tiles
+     */
+    public static void highlightTiles(GameState gameState, ActorRef out, List<Tile> myTilesToHighlight) {
+    	// Make sure you update you tile highlight Set
+    	gameState.getHighlightedTiles().clear(); // Not sure if I have to clear and then add. I believe we do not need highlight recursively
+    	gameState.setHighlightedTiles(myTilesToHighlight);
+    	
+    	for (int i=0; i<myTilesToHighlight.size(); i++) {
+    		BasicCommands.drawTile(out, myTilesToHighlight.get(i), 1);
+    	}
+    }
+    
+    /*
+     *  Dehighlight tiles
+     */
+    public static void dehighlightTiles(GameState gameState, ActorRef out) {
+    	for (Tile tile : gameState.getHighlightedTiles()) {
+    		tile.setTileMode(0);
+    		BasicCommands.drawTile(out, tile, 0);
+    	}
+    	// Clear after you dehighlight
+    	gameState.getHighlightedTiles().clear();
+    }
 }

@@ -69,6 +69,6 @@ public class Initalize implements EventProcessor{
 	private void communicateInitialState(ActorRef out, GameState gameState) {
 		BasicCommands.drawGrid(out, gameState.getGrid());
 		BasicCommands.drawUnitsAndSetAttributes(gameState, out);
-		BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out);
+		BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
 	}
 }

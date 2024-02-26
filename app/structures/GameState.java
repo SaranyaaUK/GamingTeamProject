@@ -1,7 +1,14 @@
 package structures;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
+import structures.basic.Card;
 import structures.basic.Grid;
 import structures.basic.Player;
+import structures.basic.Tile;
+import structures.basic.spell.Spell;
 
 public class GameState {
 	public static final int INITIAL_HEALTH = 20;
@@ -16,12 +23,18 @@ public class GameState {
 	private Player AIPlayer; // AI player
 	private Player currentPlayer; // CurrentPlayer
 	private int turn; // Tracks the current game turn
+	private int handPosition; // Indicates if a card is clicked.
+	private Spell SpellToCast;
+	private Set<Tile> highlightedTiles;
 
 	// Constructors
 	public GameState() {
 		// Initialize default values
 		this.gameInitialised = false;
 		this.turn = 1; // Assuming the game starts with turn 0
+		this.handPosition = -1;
+		this.SpellToCast = null;
+		this.highlightedTiles = new HashSet<Tile>();
 	}
 
 	// Getter and setter for gameInitialized
@@ -74,6 +87,42 @@ public class GameState {
 
 	public void setTurn(int turn) {
 		this.turn = turn;
+	}
+
+	public int getHandPosition() {
+		return handPosition;
+	}
+
+	public void setHandPosition(int handPosition) {
+		this.handPosition = handPosition;
+	}
+	
+	public void resetHandPosition() {
+		handPosition = -1;
+	}
+
+	public boolean isCardClicked() {
+		return this.handPosition != -1 ;
+	}
+	
+	public Card getClickedCard() {
+		int handPosition = this.getHandPosition();
+    	return this.getCurrentPlayer().getMyHandCards().get(handPosition-1);
+	}
+	public Spell getSpellToCast() {
+		return SpellToCast;
+	}
+
+	public void setSpellToCast(Spell spellToCast) {
+		SpellToCast = spellToCast;
+	}
+
+	public Set<Tile> getHighlightedTiles() {
+		return highlightedTiles;
+	}
+
+	public void setHighlightedTiles(Collection<Tile> highlightedTiles) {
+		this.highlightedTiles.addAll(highlightedTiles);
 	}
 
 	// Method to increment the turn

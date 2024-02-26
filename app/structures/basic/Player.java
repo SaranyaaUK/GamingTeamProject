@@ -1,5 +1,6 @@
 package structures.basic;
 
+import java.util.ArrayList;
 import java.util.List;
 import structures.GameState;
 import utils.BasicObjectBuilders;
@@ -21,6 +22,8 @@ public class Player {
 	private CardManager myCardManager;
 	// Player's avatar representation
 	private Unit myAvatar;
+	// Player's units
+	private ArrayList<Unit> myUnits;
 
 	public Player () {
 		this(GameState.INITIAL_HEALTH, GameState.INITIAL_MANA);
@@ -29,9 +32,12 @@ public class Player {
 	public Player(int health, int mana) {
 		this.health = health;
 		this.mana = mana;
+		// Initialise the units list
+		this.myUnits = new ArrayList<Unit>();
 		// Set the CardManager and the avatar
 		setCardManager(new CardManager(true));
 		setAvatar(loadAvatar());
+		
 	}
 
 	// Getter and Setters
@@ -67,6 +73,14 @@ public class Player {
 		this.myCardManager = cardManager;
 	}
 	
+	public ArrayList<Unit> getMyUnits() {
+		return myUnits;
+	}
+
+	public void addUnits(Unit unit) {
+		this.myUnits.add(unit);
+	}
+
 	/*
 	 *  Get the avatar's configuration file
 	 */
@@ -79,7 +93,9 @@ public class Player {
 	 */
 	private Unit loadAvatar() {
 		int humanAvatarID = getAvatarID(); // To uniquely identify the avatar
-		return BasicObjectBuilders.loadUnit(getAvatarConfig(), humanAvatarID, Unit.class);
+		Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), humanAvatarID, Unit.class);
+		this.addUnits(avatar);
+		return avatar;
 	}
 
 	/*
