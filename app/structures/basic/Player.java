@@ -1,7 +1,9 @@
 package structures.basic;
 
-import utils.StaticConfFiles;
+import java.util.List;
+import structures.GameState;
 import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
 
 /**
  * A basic representation of of the Player. A player
@@ -11,39 +13,28 @@ import utils.BasicObjectBuilders;
  *
  */
 
-/*
- * Signature
- * 
- * Attributes
- * CardManager myCardManager
- * Unit myAvatar
- * 
- * Methods
- * CardManager getCardManager()
- * void loadAvatar()
- * Unit getAvatar()
- * String getAvatarConfig()
- * 
- */
-
 public class Player {
 
-	int health;
-	int mana;
-	CardManager myCardManager;
-	Unit myAvatar;
+	private int health;
+	private int mana;
+	// Player's cardManager to keep track of deck Cards and hand Cards
+	private CardManager myCardManager;
+	// Player's avatar representation
+	private Unit myAvatar;
 
-	public Player() {
-		this(20, 0);
+	public Player () {
+		this(GameState.INITIAL_HEALTH, GameState.INITIAL_MANA);
 	}
 
 	public Player(int health, int mana) {
-		super();
 		this.health = health;
 		this.mana = mana;
-		this.loadAvatar();
+		// Set the CardManager and the avatar
+		setCardManager(new CardManager(true));
+		setAvatar(loadAvatar());
 	}
 
+	// Getter and Setters
 	public int getHealth() {
 		return health;
 	}
@@ -60,43 +51,55 @@ public class Player {
 		this.mana = mana;
 	}
 
+	public Unit getAvatar() {
+		return myAvatar;
+	}
+
+	public void setAvatar(Unit avatar) {
+		myAvatar = avatar;
+	}
+
+	public CardManager getCardManager() {
+		return myCardManager;
+	}
+	
+	public void setCardManager(CardManager cardManager) {
+		this.myCardManager = cardManager;
+	}
+	
 	/*
-	 * Returns the Player's avatar configuration
+	 *  Get the avatar's configuration file
 	 */
 	public String getAvatarConfig() {
 		return StaticConfFiles.humanAvatar;
 	}
 
 	/*
-	 * Returns the Player's avatar (unit) object
+	 *  Loads the avatar using the config file
 	 */
-	public Unit getAvatar() {
-		return this.myAvatar;
+	private Unit loadAvatar() {
+		int humanAvatarID = getAvatarID(); // To uniquely identify the avatar
+		return BasicObjectBuilders.loadUnit(getAvatarConfig(), humanAvatarID, Unit.class);
 	}
 
 	/*
-	 * Loads the Player's avatar (unit) object
+	 *  @returns True if the player's deck is empty
 	 */
-	public void loadAvatar() {
-		// The human player avatar will have the id of 41 (1-40 for each of the cards)
-		int humanAvatarID = 41;
-		this.myAvatar = BasicObjectBuilders.loadUnit(this.getAvatarConfig(), humanAvatarID, Unit.class);
+	public boolean isMyDeckEmpty() {
+		return myCardManager.isDeckEmpty();
 	}
-
+	
 	/*
-	 * Returns the Player's card manager (deck and hand cards)
+	 *  @returns the player's hand cards
 	 */
-	public CardManager getCardManager() {
-		return this.myCardManager;
+	public List<Card> getMyHandCards() {
+		return myCardManager.getHandCards();
 	}
-
+	
 	/*
-	 * Returns the player's deck status
+	 *  @returns  A unique id to identify the avatar
 	 */
-	public boolean isDeckEmpty() {
-
-		return false;
-		// return this.getCardManager().isDeckEmpty();
+	public int getAvatarID() {
+		return 41;
 	}
-
 }

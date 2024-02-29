@@ -28,6 +28,8 @@ public class Tile {
 	int tilex;
 	int tiley;
 	
+	private Unit unit;
+
 	public Tile() {}
 	
 	public Tile(String tileTexture, int xpos, int ypos, int width, int height, int tilex, int tiley) {
@@ -95,6 +97,14 @@ public class Tile {
 		this.tiley = tiley;
 	}
 	
+	public Unit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(Unit unit) {
+		this.unit = unit;
+	}
+
 	/**
 	 * Loads a tile from a configuration file
 	 * parameters.
@@ -105,6 +115,7 @@ public class Tile {
 		
 		try {
 			Tile tile = mapper.readValue(new File(configFile), Tile.class);
+			tile.setUnit(null);
 			return tile;
 		} catch (Exception e) {
 			e.printStackTrace();
