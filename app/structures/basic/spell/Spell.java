@@ -8,7 +8,7 @@ import structures.GameState;
 public interface Spell {
 
     // Implements the effect of the spell
-    public void applySpell(Tile tile, GameState gameState);
+    public void applySpell(Tile tile);
     // Generates the valid tiles that needs to be highlighted
-    public List<Tile> getTargetTilesToHighlight(GameState gameState);
+    public List<Tile> getTargetTilesToHighlight();
 }

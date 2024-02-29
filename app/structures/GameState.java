@@ -8,6 +8,7 @@ import structures.basic.Card;
 import structures.basic.Grid;
 import structures.basic.Player;
 import structures.basic.Tile;
+import structures.basic.Unit;
 import structures.basic.spell.Spell;
 
 public class GameState {
@@ -24,17 +25,28 @@ public class GameState {
 	private Player currentPlayer; // CurrentPlayer
 	private int turn; // Tracks the current game turn
 	private int handPosition; // Indicates if a card is clicked.
-	private Spell SpellToCast;
-	private Set<Tile> highlightedTiles;
+	private Spell spellToCast;
+	private Unit currentUnit;
+	private Set<Tile> highlightedFriendlyTiles;
+	private Set<Tile> highlightedEnemyTiles;
+	private static GameState gameState;
 
 	// Constructors
-	public GameState() {
+	private GameState() {
 		// Initialize default values
 		this.gameInitialised = false;
 		this.turn = 1; // Assuming the game starts with turn 0
 		this.handPosition = -1;
-		this.SpellToCast = null;
-		this.highlightedTiles = new HashSet<Tile>();
+		this.spellToCast = null;
+		this.highlightedFriendlyTiles = new HashSet<Tile>();
+		this.highlightedEnemyTiles = new HashSet<Tile>();
+	}
+	
+	public static GameState getInstance() {
+		if (gameState == null) {
+			gameState = new GameState();
+		}
+		return gameState;
 	}
 
 	// Getter and setter for gameInitialized
@@ -110,19 +122,37 @@ public class GameState {
     	return this.getCurrentPlayer().getMyHandCards().get(handPosition-1);
 	}
 	public Spell getSpellToCast() {
-		return SpellToCast;
+		return spellToCast;
 	}
 
 	public void setSpellToCast(Spell spellToCast) {
-		SpellToCast = spellToCast;
+		this.spellToCast = spellToCast;
 	}
 
-	public Set<Tile> getHighlightedTiles() {
-		return highlightedTiles;
+	public Unit getCurrentUnit() {
+		return currentUnit;
 	}
 
-	public void setHighlightedTiles(Collection<Tile> highlightedTiles) {
-		this.highlightedTiles.addAll(highlightedTiles);
+	public void setCurrentUnit(Unit currentUnit) {
+		this.currentUnit = currentUnit;
+	}
+
+	public Set<Tile> getHighlightedFriendlyTiles() {
+		return highlightedFriendlyTiles;
+	}
+
+	public void setHighlightedFriendlyTiles(Collection<Tile> toHighlightTiles) {
+		this.highlightedFriendlyTiles.clear();
+		this.highlightedFriendlyTiles.addAll(toHighlightTiles);
+	}
+
+	public Set<Tile> getHighlightedEnemyTiles() {
+		return highlightedEnemyTiles;
+	}
+
+	public void setHighlightedEnemyTiles(Collection<Tile> toHighlightTiles) {
+		this.highlightedEnemyTiles.clear();
+		this.highlightedEnemyTiles.addAll(toHighlightTiles);
 	}
 
 	// Method to increment the turn

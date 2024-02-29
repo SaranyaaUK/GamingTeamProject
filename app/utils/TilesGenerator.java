@@ -22,7 +22,10 @@ public class TilesGenerator {
 	 *  Gives a list of tiles containing current player's 
 	 *  enemy units
 	 */
-	public static List<Tile> getEnemyUnitTiles(int mode) {
+	public static List<Tile> getEnemyUnitTiles() {
+		
+//		If you need gameState uncomment below line
+//		GameState gameState = GameState.getInstance();
 		
 		return null;
 	}
@@ -31,38 +34,53 @@ public class TilesGenerator {
 	 *  Gives a list of tiles containing current player's 
 	 *  friendly/allied units
 	 */
-	public static List<Tile> getFriendlyUnitTiles(int mode) {
+	public static List<Tile> getFriendlyUnitTiles() {
 		
+//		If you need gameState uncomment below line
+//		GameState gameState = GameState.getInstance();
+
 		return null;
 
 	}
 
 	/*
-	 *  Gives the avatar's tile
+	 *  Get the avatar's tile
 	 *  
 	 */
-	public static List<Tile> getAvatarTile(GameState gameState, Unit myAvatar, int mode){
-		
+	public static List<Tile> getAvatarTile(Unit myAvatar){
+
 		List<Tile> avatarTile = new ArrayList<Tile>();
-		
-		// Get avatar's Position
-		Position avatarPosition = myAvatar.getPosition();
-		int tilex = avatarPosition.getTilex();
-		int tiley = avatarPosition.getTiley();
+
 		// Get the avatar's tile information
-		Tile tile = gameState.getGrid().getTile(tilex, tiley);
-		tile.setTileMode(mode); // Set tile mode as needed
+		Tile tile = getUnitTile(myAvatar);
 		avatarTile.add(tile);
-		
+
 		return avatarTile;
 	}
 	
 	/*
+	 * 	Get the unit's tile object
+	 *  @return Tile object
+	 * 
+	 */
+	public static Tile getUnitTile(Unit myUnit) {
+		
+		GameState gameState = GameState.getInstance();
+		Position unitPosition = myUnit.getPosition();
+		int tilex = unitPosition.getTilex();
+		int tiley = unitPosition.getTiley();
+
+		// Get the unit's tile information
+		return gameState.getGrid().getTile(tilex, tiley);
+	}
+
+	/*
 	 *  Gives a list of tiles to summon the unit corresponding to the creature card
 	 *  
 	 */
-	public static List<Tile> getTilesToSummon(GameState gameState) {
+	public static List<Tile> getTilesToSummon() {
 
+		GameState gameState = GameState.getInstance();
 		Player currentPlayer = gameState.getCurrentPlayer();
 		List<Unit> playerUnits = currentPlayer.getMyUnits();
 		
@@ -82,16 +100,15 @@ public class TilesGenerator {
 						continue;
 					}
 					Tile tile = myGrid.getTile(tilex + j, tiley + k);
-					tile.setTileMode(1);
 					unitTiles.add(tile);
 				}
 			}
 		}
 
 		// Remove Tiles with units in it
-		// This is a workaround, the below two lines should be uncommented after its implementation and we 
+		// This is a workaround, the below two lines should be uncommented after its implementation is done and we 
 		// can get rid of this workaround.
-		unitTiles.removeAll(getAvatarTile(gameState, gameState.getHumanPlayer().getAvatar(), 0));
+		unitTiles.removeAll(getAvatarTile(gameState.getHumanPlayer().getAvatar()));
 //		unitTiles.removeAll(getFriendlyUnitTiles());
 //		unitTiles.removeAll(getEnemyUnitTiles());
 

@@ -8,17 +8,20 @@ import structures.basic.Tile;
 public class TrueStrike implements Spell {
 
 	@Override
-	public void applySpell(Tile tile, GameState gameState) {
+	public void applySpell(Tile tile) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<Tile> getTargetTilesToHighlight(GameState gameState) {
+	public List<Tile> getTargetTilesToHighlight() {
 		// TODO Auto-generated method stub
-		
-		// Should choose an enemy unit - must use the TilesGenerator.getEnemyUnitTiles();
-		
+
+		GameState gameState = GameState.getInstance();
+		// Should choose an enemy unit - must use the TilesGenerator.getEnemyUnitTiles(); but not avatar
+
+		// Need to set the appropriate highlighted tiles list here
+		// gameState.setHighlightedEnemyTiles(<toHighlightTiles>);
 		return null;
 	}
 

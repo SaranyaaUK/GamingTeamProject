@@ -34,7 +34,7 @@ public class CardClicked implements EventProcessor{
 		// Update the handPosition in gameState
 		gameState.setHandPosition(handPosition); // Remember to reset HandPosition after the card is used (should be done when we delete the card)
 		// Do the highlight events following a card click
-		GameLogic.highlightAfterCardClick(gameState, out);	
+		GameLogic.highlightAfterCardClick(out);	
 	}
 
 }

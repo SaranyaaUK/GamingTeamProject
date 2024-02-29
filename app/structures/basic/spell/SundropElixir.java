@@ -8,16 +8,20 @@ import structures.basic.Tile;
 public class SundropElixir implements Spell {
 
 	@Override
-	public void applySpell(Tile tile, GameState gameState) {
+	public void applySpell(Tile tile) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public List<Tile> getTargetTilesToHighlight(GameState gameState) {
+	public List<Tile> getTargetTilesToHighlight() {
 		// TODO Auto-generated method stub
-		
+
+		GameState gameState = GameState.getInstance();
 		// Should choose a friendly units - must use the TilesGenerator.getFriendlyUnitTiles();
+
+		// Need to set the appropriate highlighted tiles list here
+		//			gameState.setHighlightedFriendlyTiles(<toHighlightTiles>);
 		return null;
 	}
 

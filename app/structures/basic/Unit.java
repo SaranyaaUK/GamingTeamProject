@@ -25,6 +25,13 @@ public class Unit {
 	Position position;
 	UnitAnimationSet animations;
 	ImageCorrection correction;
+	int health;
+	int attack;
+	int maximumHealth = 0;
+	boolean isHumanUnit = false;
+	boolean isExhausted = true;
+	boolean isMoved = true;
+	int artefact = -1;
 	
 	public Unit() {}
 	
@@ -47,8 +54,6 @@ public class Unit {
 		this.correction = correction;
 		this.animations = animations;
 	}
-	
-	
 	
 	public Unit(int id, UnitAnimationType animation, Position position, UnitAnimationSet animations,
 			ImageCorrection correction) {
@@ -97,6 +102,57 @@ public class Unit {
 		this.animations = animations;
 	}
 	
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+		if (health == 0) {
+			GameLogic.notifyDeathWatchers();
+		}
+	}
+
+	public int getAttack() {
+		return attack;
+	}
+
+	public void setAttack(int attack) {
+		this.attack = attack;
+	}
+
+	public int getMaximumHealth() {
+		return maximumHealth;
+	}
+
+	public void setMaximumHealth(int maximumHealth) {
+		this.maximumHealth = maximumHealth;
+	}
+
+	public boolean isHumanUnit() {
+		return isHumanUnit;
+	}
+
+	public void setHumanUnit(boolean isHumanUnit) {
+		this.isHumanUnit = isHumanUnit;
+	}
+
+	public boolean isExhausted() {
+		return isExhausted;
+	}
+
+	public void setExhausted(boolean isExhausted) {
+		this.isExhausted = isExhausted;
+	}
+
+	public boolean isMoved() {
+		return isMoved;
+	}
+
+	public void setMoved(boolean isMoved) {
+		this.isMoved = isMoved;
+	}
+
 	/**
 	 * This command sets the position of the Unit to a specified
 	 * tile.
