@@ -7,7 +7,8 @@ import gamelogic.ProcessEndTurnClicked;
 import structures.GameState;
 
 /**
- * Indicates that the user has clicked an object on the game canvas, in this case
+ * Indicates that the user has clicked an object on the game canvas, in this
+ * case
  * the end-turn button.
  * <p>
  * {
@@ -25,7 +26,7 @@ public class EndTurnClicked implements EventProcessor {
             return;
         }
 
-        ProcessEndTurnClicked.processEndTurnClicked();
+        ProcessEndTurnClicked.processEndTurnClicked(out);
     }
 
 }

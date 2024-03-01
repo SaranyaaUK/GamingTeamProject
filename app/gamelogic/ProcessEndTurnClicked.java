@@ -6,11 +6,11 @@ import structures.basic.AIPlayer;
 import structures.basic.Tile;
 
 public class ProcessEndTurnClicked {
-    public static void processEndTurnClicked() {
+    public static void processEndTurnClicked(ActorRef out) {
 
         GameState gameState = GameState.getInstance();
 
-        Actions.resetAfterOneTurn();
+        Actions.resetAfterOneTurn(out);
 
         if (gameState.getCurrentPlayer() == gameState.getAIPlayer()) {
             AIPlayerLogic logic = new AIPlayerLogic();
