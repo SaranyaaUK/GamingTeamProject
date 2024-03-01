@@ -27,6 +27,10 @@ public class TileClicked implements EventProcessor{
 
 		int tilex = message.get("tilex").asInt();
 		int tiley = message.get("tiley").asInt();
+
+		if (gameState.getCurrentPlayer() != gameState.getHumanPlayer()) {
+			return;
+		}
 		
 		if (gameState.something == true) {
 			// do some logic
