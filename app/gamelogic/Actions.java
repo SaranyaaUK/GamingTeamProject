@@ -22,13 +22,15 @@ public class Actions {
     //remove all the highlight
     //reset handPosition
     //reset current player's Mana to 0
-    public static void resetAfterOneTurn() {
+    public static void resetAfterOneTurn(ActorRef out) {
 
     }
 
     //modify the state of unit
     //modify the tile
-    public static void unitMove(Unit unit, Tile tile) {
+    //move animation
+    //gamelogic.associateWithTile
+    public static void unitMove(ActorRef ref, Unit unit, Tile tile) {
 
 
     }
@@ -39,14 +41,18 @@ public class Actions {
     //do the counter attack
     //check if avatar dies, is so, end game
     //check if any unit dies, if so, invoke DeathWatch
-    public static void unitAttack(Unit unit, Unit target) {
+    //unit attack animation
+    //target hit animation
+    public static void unitAttack(ActorRef ref, Unit unit, Unit target) {
 
 
     }
 
     //create the unit first
     //modify the tile and unit
-    //check all the Gambit
+    //check if it is the Gambit
+    //call repositionHandCards
+    //delete one card in hand
     public static void placeUnit(ActorRef ref, Tile tile) {
     }
 

@@ -1,6 +1,5 @@
 package gamelogic;
 
-import akka.actor.Actor;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
@@ -74,6 +73,7 @@ public class ProcessTileClicked {
             } else {
                 Actions.placeUnit(out, tile);
             }
+            BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 1);
         } else {
             //  BasicCommands.addPlayer1Notification();
         }
@@ -83,12 +83,12 @@ public class ProcessTileClicked {
 
     private static void processUnitMove(ActorRef out, Tile TargetTile) {
         GameState gameState = GameState.getInstance();
-        Actions.unitMove(gameState.getCurrentUnit(), TargetTile);
+        Actions.unitMove(out, gameState.getCurrentUnit(), TargetTile);
     }
 
     private static void processUnitAttack(ActorRef out, Tile tile) {
         GameState gameState = GameState.getInstance();
-        Actions.unitAttack(gameState.getCurrentUnit(), tile.getUnit());
+        Actions.unitAttack(out, gameState.getCurrentUnit(), tile.getUnit());
     }
 
 
