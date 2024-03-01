@@ -40,7 +40,9 @@ public class AIPlayer extends Player {
 	 */
     private Unit loadAvatar() {
         int aiAvatarID = getAvatarID(); // This assumes avatars are uniquely identified
-        return BasicObjectBuilders.loadUnit(getAvatarConfig(), aiAvatarID, Unit.class);
+        Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), aiAvatarID, Unit.class);
+		this.addUnits(avatar);
+		return avatar;
     }
     
     /*

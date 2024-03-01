@@ -72,3 +72,5 @@ local.properties
 .scala_dependencies
 .worksheet
 /bin/
+
+.DS_Store

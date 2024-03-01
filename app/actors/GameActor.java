@@ -63,7 +63,7 @@ public class GameActor extends AbstractActor {
 		eventProcessors.put("otherclicked", new OtherClicked());
 		
 		// Initalize a new game state object
-		gameState = new GameState();
+		gameState = GameState.getInstance();
 		
 		// Get the list of image files to pre-load the UI with
 		Set<String> images = ImageListForPreLoad.getImageListForPreLoad();

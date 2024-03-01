@@ -16,6 +16,7 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.UnitAnimation;
 import structures.basic.UnitAnimationType;
+import utils.TilesGenerator;
 
 
 /**
@@ -442,12 +443,10 @@ public class BasicCommands {
 		}
 	}
 
-	public static void drawHandCards(List<Card> handCards, ActorRef out) {
-		// Assuming visualization mode 0 for the initial state of the cards
-		int mode = 0; // Example visualization mode, adjust based on game's logic
-
+	public static void drawHandCards(List<Card> handCards, ActorRef out, int mode) {
 		int position = 1; // Start position from 1
 		for (Card card : handCards) {
+				card.getMiniCard().setIndex(mode);
 				BasicCommands.drawCard(out, card, position, mode);
 				position++; // Increment position for next card
 		}
@@ -458,7 +457,9 @@ public class BasicCommands {
 	/*
 	 *  Used by the Initialise event to draw the player's avatar and its statistics
 	 */
-	public static void drawUnitsAndSetAttributes(GameState gameState, ActorRef out) {
+	public static void drawUnitsAndSetAttributes(ActorRef out) {
+		
+		GameState gameState = GameState.getInstance();
 		Player humanPlayer = gameState.getHumanPlayer();
 		Player aiPlayer = gameState.getAIPlayer();
 		Player currentPlayer = gameState.getCurrentPlayer();
@@ -468,30 +469,88 @@ public class BasicCommands {
 		// Draw units (avatars) for both players
 		BasicCommands.drawUnit(out, humanAvatar, gameState.getGrid().getTile(2, 3));
 		BasicCommands.drawUnit(out, aiAvatar, gameState.getGrid().getTile(8, 3));
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		// Set the avatars' health to 20 for both players
 		BasicCommands.setUnitHealth(out, humanAvatar, GameState.INITIAL_HEALTH);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setUnitHealth(out, aiAvatar, GameState.INITIAL_HEALTH);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		// Set the avatars' attack, 
 		BasicCommands.setUnitAttack(out, humanAvatar, GameState.INITIAL_ATTACK);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 		
 		BasicCommands.setUnitAttack(out, aiAvatar, GameState.INITIAL_ATTACK);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		// Communicate the updated health and mana values to the front-end
 		BasicCommands.setPlayer1Health(out, humanPlayer);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setPlayer2Health(out, aiPlayer);
-		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.setPlayer1Mana(out, currentPlayer);
 	}
 	
+	/*
+	 *  Dehighlight any highlighted card
+	 *  Used in highlightsAfterCardClick method
+	 */
+    public static void dehighlightCards(ActorRef out) {
+    	GameState gameState = GameState.getInstance();
+    	BasicCommands.drawHandCards(gameState.getCurrentPlayer().getMyHandCards(), out, 0);
+    }
+    
+    /*
+     *  Highlight clicked cards
+     */
+    public static void highlightClickedCard(ActorRef out) {
+    	
+    	GameState gameState = GameState.getInstance();
+    	Card clickedCard = gameState.getClickedCard();
+		clickedCard.getMiniCard().setIndex(1); // Sets the animations to play in the minicard
+		BasicCommands.drawCard(out, clickedCard, gameState.getHandPosition(), 1);
+		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+    }
+
+    /*
+     * Highlight of tiles
+     */
+    public static void highlightTiles(ActorRef out) {
+    	
+    	GameState gameState = GameState.getInstance();
+    	
+    	// Iterate over the tiles to be Highlighted
+    	for (Tile tile: gameState.getHighlightedFriendlyTiles()) {
+    		BasicCommands.drawTile(out, tile, 1);
+    		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+    	}
+    	
+    	for (Tile tile: gameState.getHighlightedEnemyTiles()) {
+    		BasicCommands.drawTile(out, tile, 2);
+    		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+    	}
+    }
+    
+    /*
+     *  Dehighlight tiles
+     */
+    public static void dehighlightTiles(ActorRef out) {
+    	
+    	GameState gameState = GameState.getInstance();
+ 
+    	// Iterate over the highlighted tiles to dehighlight it.
+    	for (Tile tile: gameState.getHighlightedFriendlyTiles()) {
+    		BasicCommands.drawTile(out, tile, 0);
+    		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+    	}
+    	
+    	for (Tile tile: gameState.getHighlightedEnemyTiles()) {
+    		BasicCommands.drawTile(out, tile, 0);
+    		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
+    	}
+    }
 }

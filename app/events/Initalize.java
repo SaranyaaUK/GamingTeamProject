@@ -29,23 +29,26 @@ public class Initalize implements EventProcessor{
 
 	@Override
 	public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
-		initializeGameGrid(gameState);
-		createPlayers(gameState);
+		initializeGameGrid();
+		createPlayers();
 		
 		// Set Current Player and set his mana
 		gameState.setCurrentPlayer(gameState.getHumanPlayer());
 		gameState.getCurrentPlayer().setMana(gameState.getTurn() + 1);
 
-		communicateInitialState(out, gameState);
+		communicateInitialState(out);
 		gameState.setGameInitialised(true);
 	}
 	
-	private void initializeGameGrid(GameState gameState) {
+	private void initializeGameGrid() {
+		GameState gameState = GameState.getInstance();
 		Grid grid = BasicObjectBuilders.loadGrid();
 		gameState.setGrid(grid);
 	}
 
-	private void createPlayers(GameState gameState) {
+	private void createPlayers() {
+		
+		GameState gameState = GameState.getInstance();
 		Player humanPlayer = new Player();
 		Player aiPlayer = new AIPlayer();
 		Grid myGrid = gameState.getGrid();
@@ -66,9 +69,11 @@ public class Initalize implements EventProcessor{
 		gameState.setAIPlayer(aiPlayer);
 	}
 
-	private void communicateInitialState(ActorRef out, GameState gameState) {
+	private void communicateInitialState(ActorRef out) {
+		
+		GameState gameState = GameState.getInstance();
 		BasicCommands.drawGrid(out, gameState.getGrid());
-		BasicCommands.drawUnitsAndSetAttributes(gameState, out);
-		BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out);
+		BasicCommands.drawUnitsAndSetAttributes(out);
+		BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
 	}
 }
