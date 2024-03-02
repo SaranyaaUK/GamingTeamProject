@@ -12,12 +12,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Represents the game board as a grid of tiles.
  */
 public class Grid {
+
     Tile[][] boardTiles; // A 2D array to hold the tiles
     @JsonIgnore
     private static ObjectMapper mapper = new ObjectMapper(); // Jackson Java Object Serializer, is used to read java
                                                              // objects from a file
-    int gridxsize;
-    int gridysize;
+    public int gridxsize;
+    public int gridysize;
     int gridmargin;
     int gridTopLeftx;
     int gridTopLefty;
