@@ -77,4 +77,10 @@ public class CardManager {
         return this.myHandCards;
     }
 
+     public void repositionHandCards(ActorRef Ref, int usedCardPosition){
+
+        BasicCommands.deleteCard(Ref, usedCardPosition);
+        myHandCards.remove(usedCardPosition);
+    }
+
 }
