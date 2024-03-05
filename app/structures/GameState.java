@@ -10,6 +10,7 @@ import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.spell.Spell;
+import structures.basic.spell.WraithlingSwarm;
 
 public class GameState {
     public static final int INITIAL_HEALTH = 20;
@@ -17,6 +18,7 @@ public class GameState {
     public static final int INITIAL_ATTACK = 2;
 
     public boolean gameInitialised = false;
+    public boolean endTurnClicked = false;
     public boolean something = false;
 
     private Grid grid; // Represents the game grid (Tiles on the board)
@@ -175,11 +177,39 @@ public class GameState {
     }
 
     public void switchCurrentPlayer() {
-        if (currentPlayer == humanPlayer) {
+        if (currentPlayer.equals(humanPlayer)) {
             currentPlayer = AIPlayer;
         } else {
             currentPlayer = humanPlayer;
         }
+    }
+    
+    public boolean isCurrentPlayerHuman() {
+    	return currentPlayer.equals(humanPlayer);
+    }
+    
+    public boolean isSpellWraithlingSwarm() {
+    	if (!(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm)){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public static boolean wraithlingSummonStatus() {
+    	GameState gameState = GameState.getInstance();
+    	Spell spellToCast = gameState.getSpellToCast();
+		if (! (spellToCast == null)) {
+			if (gameState.isSpellWraithlingSwarm()) {
+				int numWraithlingSummoned = ((WraithlingSwarm) spellToCast).getNumWraithlings();
+				if (numWraithlingSummoned == 0) {
+					return false;
+				}
+				if (numWraithlingSummoned < WraithlingSwarm.maximumWraithlings) {
+					return true;
+				}
+			}
+		}
+		return false;
     }
 
 

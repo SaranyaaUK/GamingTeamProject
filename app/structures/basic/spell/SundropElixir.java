@@ -2,27 +2,36 @@ package structures.basic.spell;
 
 import java.util.List;
 
+import akka.actor.ActorRef;
 import structures.GameState;
 import structures.basic.Tile;
+import structures.basic.Unit;
+import utils.TilesGenerator;
 
 public class SundropElixir implements Spell {
-
+	
+	final int alliedHealth = 4;
 	@Override
-	public void applySpell(Tile tile) {
-		// TODO Auto-generated method stub
+	public void applySpell(ActorRef out, Tile tile) {
 
+		Unit myTargetUnit = tile.getUnit();
+		
+		// Heal allied unit by 4 health (capped at maximum health)
+		int maxHealth = myTargetUnit.getMaximumHealth();
+		int currentHealth = myTargetUnit.getHealth();
+		
+		myTargetUnit.setHealth(Math.min(maxHealth, currentHealth + alliedHealth));
 	}
 
 	@Override
 	public List<Tile> getTargetTilesToHighlight() {
-		// TODO Auto-generated method stub
 
 		GameState gameState = GameState.getInstance();
-		// Should choose a friendly units - must use the TilesGenerator.getFriendlyUnitTiles();
+		// To highlight tiles
+		List<Tile> toHighlightTiles = TilesGenerator.getFriendlyUnitTiles();
+		gameState.setHighlightedFriendlyTiles(toHighlightTiles);
 
-		// Need to set the appropriate highlighted tiles list here
-		//			gameState.setHighlightedFriendlyTiles(<toHighlightTiles>);
-		return null;
+		return toHighlightTiles;
 	}
 
 }

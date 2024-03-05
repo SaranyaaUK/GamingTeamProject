@@ -76,5 +76,22 @@ public class CardManager {
     public List<Card> getHandCards() {
         return this.myHandCards;
     }
-
+    
+    /*
+     *  Delete card
+     */
+    public void deleteHandCardAt(int handPosition) {
+    	this.myHandCards.remove(handPosition);
+    }
+    
+    /*
+     *  Get card
+     */
+    public Card getHandCardAt(int handPosition) {
+    	return this.myHandCards.get(handPosition);
+    }
+    
+    public List<Card> getMyDeck() {
+    	return this.myDeck;
+    }
 }

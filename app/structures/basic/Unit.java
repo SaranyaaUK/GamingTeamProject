@@ -32,6 +32,8 @@ public class Unit {
 	boolean isHumanUnit = false;
 	boolean isExhausted = true;
 	boolean isMoved = true;
+	boolean isStunned = false;
+	int artifact = -1;
 
 	public Unit() {
 	}
@@ -113,9 +115,6 @@ public class Unit {
 
 	public void setHealth(int health) {
 		this.health = health;
-		if (health == 0) {
-			GameLogic.notifyDeathWatchers();
-		}
 	}
 
 	public int getAttack() {
@@ -158,6 +157,25 @@ public class Unit {
 		this.isMoved = isMoved;
 	}
 
+	public boolean isStunned() {
+		return isStunned;
+	}
+
+	public void setStunned(boolean isStunned) {
+		this.isStunned = isStunned;
+	}
+
+	public int getArtifact() {
+		return artifact;
+	}
+
+	public void setArtifact(int artifact) {
+		this.artifact = artifact;
+	}
+
+	public void decrementArtifact() {
+		this.artifact--;
+	}
 	/**
 	 * This command sets the position of the Unit to a specified
 	 * tile.

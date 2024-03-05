@@ -1,39 +1,43 @@
 package structures.basic.spell;
 
 import java.util.List;
-
+import akka.actor.ActorRef;
+import commands.BasicCommands;
+import gamelogic.Actions;
 import structures.GameState;
 import structures.basic.Tile;
+import utils.TilesGenerator;
 
 public class WraithlingSwarm implements Spell {
 
-	private int NumWraithlings = 0;
-	
+	private int numWraithlings = 0;
+	public static final int maximumWraithlings = 3;
+
+
 	public int getNumWraithlings() {
-		return NumWraithlings;
+		return this.numWraithlings;
 	}
 
 	public void setNumWraithlings(int numWraithlings) {
-		NumWraithlings = numWraithlings;
+		this.numWraithlings = numWraithlings;
 	}
 
 	@Override
-	public void applySpell(Tile tile) {
-		// TODO Auto-generated method stub
-
+	public void applySpell(ActorRef out, Tile tile) {
+		GameState gameState = GameState.getInstance();
+		Actions.placeUnit(out, tile);
+		numWraithlings++;
 	}
 
 	@Override
 	public List<Tile> getTargetTilesToHighlight() {
-		// TODO Auto-generated method stub
-		
+
 		GameState gameState = GameState.getInstance();
-		// Should use the Utils.TilesGenerator getTilesToSummon method
-		
-		// Set the appropriate Highlight tile lsit
-//		gameState.setHighlightedFriendlyTiles(<toHighlightTiles>);
-		
-		return null;
+		// To highlight tiles
+		List<Tile> tilesToHighlight = TilesGenerator.getTilesToSummon();
+		gameState.setHighlightedFriendlyTiles(tilesToHighlight);
+
+		return tilesToHighlight;
 	}
 
 }

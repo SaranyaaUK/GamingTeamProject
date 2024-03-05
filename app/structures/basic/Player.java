@@ -95,6 +95,12 @@ public class Player {
 		int humanAvatarID = getAvatarID(); // To uniquely identify the avatar
 		Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), humanAvatarID, Unit.class);
 		this.addUnits(avatar);
+		avatar.setHumanUnit(true);
+		avatar.setHealth(GameState.INITIAL_HEALTH);
+		avatar.setAttack(GameState.INITIAL_ATTACK);
+		avatar.setMaximumHealth(avatar.getHealth());
+		avatar.setExhausted(false);
+		avatar.setMoved(false);
 		return avatar;
 	}
 

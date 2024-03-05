@@ -451,6 +451,14 @@ public class BasicCommands {
 				position++; // Increment position for next card
 		}
 	}
+	
+	public static void deleteHandCards(List<Card> handCards, ActorRef out) {
+		int position = 1; // Start position from 1
+		for (Card card : handCards) {
+				BasicCommands.deleteCard(out, position);
+				position++; // Increment position for next card
+		}
+	}
 
 	// Helper methods for other front-end communication
 	

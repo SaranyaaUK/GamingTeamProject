@@ -4,19 +4,29 @@ import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.Card;
+import structures.basic.CardManager;
+import structures.basic.GameLogic;
 import structures.basic.Tile;
 import structures.basic.spell.Spell;
+import structures.basic.spell.WraithlingSwarm;
 import utils.TilesGenerator;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 public class ProcessTileClicked {
     static GameState gameState = GameState.getInstance();
 
     public static void dispatchAfterTileClicked(ActorRef out, Tile tile) {
+
         //BasicCommands.clearHighLight();
         if (!gameState.getHighlightedEnemyTiles().contains(tile) && !gameState.getHighlightedFriendlyTiles().contains(tile)) {
+        	
+           	if (GameState.wraithlingSummonStatus()) {
+    			return; // Do not reset, just return
+    		}
             Actions.resetWithinOneTurn(out);
+            BasicCommands.dehighlightCards(out);
             //If a de-highlighted tile is clicked and there is one human unit is within this tile
             if (tile.getUnit() != null && tile.getUnit().isHumanUnit()) {
                 processUnitClick(out, tile);
@@ -25,7 +35,7 @@ public class ProcessTileClicked {
         }
 
         //HumanPlayer clicked a human unit previously and clicked a highlight tile now
-        if (gameState.getHandPosition() == -1) {
+        if (!gameState.isCardClicked()) {
 
             //This tile is white highlighted, which means it is a movable tile
             if (gameState.getHighlightedFriendlyTiles().contains(tile)) {
@@ -39,47 +49,73 @@ public class ProcessTileClicked {
             //There is a 'card click' before, and a valid tile is clicked
         } else {
             processCardUse(out, tile);
+            // Delete card from hand after it has summoned or casted spell on board      
+            if (!GameState.wraithlingSummonStatus()) {       	
+            	GameLogic.updateHandCardsView(out);
+            }
         }
         Actions.resetWithinOneTurn(out);
-        // BasicCommands.clearHighlight();
     }
-
 
     private static void processUnitClick(ActorRef out, Tile tile) {
         if (tile.getUnit().isExhausted()) {
             BasicCommands.addPlayer1Notification(out, "This unit is exhausted.", 1);
         } else {
-            gameState.setCurrentUnit(tile.getUnit());
-            if (tile.getUnit().isMoved()) {
-                List<Tile> attackableTiles = TilesGenerator.getAttackableTiles(tile);
-            } else {
-                gameState.setHighlightedFriendlyTiles(TilesGenerator.getMovableTiles(tile));
-                gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(tile));
-            }
-            // BasicCommands.highlightTiles();
+        	gameState.setCurrentUnit(tile.getUnit());
+        	if (tile.getUnit().isMoved()) {
+        		gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
+        	} else {
+        		if(!TilesGenerator.hasProvokeUnitAround(gameState.getCurrentUnit())) {
+        			if(!TilesGenerator.getMovableTiles(gameState.getCurrentUnit()).isEmpty()) {
+        				gameState.setHighlightedFriendlyTiles(TilesGenerator.getMovableTiles(gameState.getCurrentUnit()));
+        			}
+        		}
+        		if(!TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()).isEmpty()) {
+        			gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
+        		}
+        	}
+        	BasicCommands.highlightTiles(out);
         }
-
-
     }
 
 
     //where should I handle the mana reduce and where do I handle spell animation
     private static void processCardUse(ActorRef out, Tile tile) {
         GameState gameState = GameState.getInstance();
-        Card card = gameState.getHumanPlayer().getMyHandCards().get(gameState.getHandPosition());
+        Card card = gameState.getClickedCard();
         if (card.getManacost() <= gameState.getCurrentPlayer().getMana()) {
-            if (card instanceof Spell) {
-                ((Spell) card).applySpell(tile);
+        	// Update Mana
+        	Actions.updateCurrentPlayerMana(out, gameState.getCurrentPlayer().getMana()-card.getManacost());
+
+            if (!card.isCreature()) {
+            	Spell mySpellInstance = gameState.getSpellToCast();
+            	// Inside the processCardUse method
+            	if (gameState.isSpellWraithlingSwarm()) {
+            		ProcessTileClicked.handleWraithlingSwarm(out,tile);
+            	} else {
+            		mySpellInstance.applySpell(out, tile);
+            	}
             } else {
-                Actions.placeUnit(out, tile);
+            	Actions.placeUnit(out, tile);
             }
-            BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 1);
         } else {
-            //  BasicCommands.addPlayer1Notification();
+        	if (GameState.wraithlingSummonStatus() ) {
+        		ProcessTileClicked.handleWraithlingSwarm(out,tile);
+        	} else {
+        		BasicCommands.addPlayer1Notification(out, "Not enough Mana", 100);
+        	}
         }
-
     }
-
+    
+    private static void handleWraithlingSwarm(ActorRef out, Tile tile) {
+    	Spell mySpellInstance = gameState.getSpellToCast();
+    	((WraithlingSwarm) mySpellInstance).applySpell(out, tile);
+    	if (((WraithlingSwarm) mySpellInstance).getNumWraithlings() != 3) {
+    		BasicCommands.dehighlightTiles(out);
+    		((WraithlingSwarm) mySpellInstance).getTargetTilesToHighlight();
+    		BasicCommands.highlightTiles(out);
+    	}
+    }
 
     private static void processUnitMove(ActorRef out, Tile TargetTile) {
         GameState gameState = GameState.getInstance();

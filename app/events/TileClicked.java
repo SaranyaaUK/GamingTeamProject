@@ -1,10 +1,11 @@
 package events;
 
-
 import com.fasterxml.jackson.databind.JsonNode;
 
 import akka.actor.ActorRef;
+import gamelogic.ProcessTileClicked;
 import structures.GameState;
+import structures.basic.Tile;
 
 /**
  * Indicates that the user has clicked an object on the game canvas, in this case a tile.
@@ -32,9 +33,10 @@ public class TileClicked implements EventProcessor{
 			return;
 		}
 		
-		if (gameState.something == true) {
-			// do some logic
-		}
+		ProcessTileClicked.dispatchAfterTileClicked(out, gameState.getGrid().getTile(tilex, tiley));
+//		if (gameState.something == true) {
+//			// do some logic
+//		}
 		
 	}
 

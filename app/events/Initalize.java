@@ -36,8 +36,9 @@ public class Initalize implements EventProcessor{
 		gameState.setCurrentPlayer(gameState.getHumanPlayer());
 		gameState.getCurrentPlayer().setMana(gameState.getTurn() + 1);
 
-		communicateInitialState(out);
 		gameState.setGameInitialised(true);
+
+		communicateInitialState(out);
 	}
 	
 	private void initializeGameGrid() {
