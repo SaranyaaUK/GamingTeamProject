@@ -11,9 +11,9 @@ import java.util.List;
 
 public class CardManager {
 
-	// Player's Deck
+    // Player's Deck
     private List<Card> myDeck;
-    // Player's Hand cards 
+    // Player's Hand cards
     private List<Card> myHandCards;
     // Maximum allowable cards in hand
     public final int MAX_HAND_CARDS = 6;
@@ -61,26 +61,38 @@ public class CardManager {
     }
 
     /*
-     *  Gives the deck status
-     *  
-     *  @return true if the deck is empty, else false.
+     * Gives the deck status
+     * 
+     * @return true if the deck is empty, else false.
      */
     public boolean isDeckEmpty() {
         return myDeck.isEmpty();
     }
 
-    /*  Gives the hand cards
+    /*
+     * Gives the hand cards
      * 
-     *  return list of cards in hand
+     * return list of cards in hand
      */
     public List<Card> getHandCards() {
         return this.myHandCards;
     }
 
-     public void repositionHandCards(ActorRef Ref, int usedCardPosition){
-
-        BasicCommands.deleteCard(Ref, usedCardPosition);
-        myHandCards.remove(usedCardPosition);
+    /*
+     * Delete card
+     */
+    public void deleteHandCardAt(int handPosition) {
+        this.myHandCards.remove(handPosition);
     }
 
+    /*
+     * Get card
+     */
+    public Card getHandCardAt(int handPosition) {
+        return this.myHandCards.get(handPosition);
+    }
+
+    public List<Card> getMyDeck() {
+        return this.myDeck;
+    }
 }

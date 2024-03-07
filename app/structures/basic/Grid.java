@@ -98,5 +98,13 @@ public class Grid {
         }
         return null;
     }
+    
+    public int getGridXSize() {
+    	return this.gridxsize;
+    }
+    
+    public int getGridYSize() {
+    	return this.gridysize;
+    }
 
 }

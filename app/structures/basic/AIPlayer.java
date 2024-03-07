@@ -1,6 +1,7 @@
 package structures.basic;
 
 
+import structures.GameState;
 import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
 
@@ -42,6 +43,12 @@ public class AIPlayer extends Player {
         int aiAvatarID = getAvatarID(); // This assumes avatars are uniquely identified
         Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), aiAvatarID, Unit.class);
 		this.addUnits(avatar);
+		avatar.setHealth(GameState.INITIAL_HEALTH);
+		avatar.setAttack(GameState.INITIAL_ATTACK);
+		avatar.setMaximumHealth(avatar.getHealth());
+		avatar.setHumanUnit(false);
+		avatar.setExhausted(false);
+		avatar.setMoved(false);
 		return avatar;
     }
     

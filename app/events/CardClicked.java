@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import akka.actor.ActorRef;
 import structures.GameState;
 import structures.basic.GameLogic;
+import structures.basic.spell.Spell;
+import structures.basic.spell.WraithlingSwarm;
 
 /**
  * Indicates that the user has clicked an object on the game canvas, in this case a card.
@@ -26,6 +28,10 @@ public class CardClicked implements EventProcessor{
 		
 		int handPosition = message.get("position").asInt();
 		
+		// If in process of summoning wrathlings do nothing else
+		if (GameState.wraithlingSummonStatus()) {
+			return;
+		}
 		// If they click the same card again and again treat as no-op 
 		if (gameState.getHandPosition() == handPosition) {
 			return;
