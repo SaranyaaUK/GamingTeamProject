@@ -141,17 +141,6 @@ public class Actions {
     // call repositionHandCards
     // delete one card in hand
     public static void placeUnit(ActorRef ref, Tile tile) {
-
-        GameState gameState = GameState.getInstance();
-        Card card = gameState.getCurrentPlayer().getMyHandCards().get(gameState.getHandPosition());
-
-        Unit unit= GameLogic.getCreatureObject(card);
-
-        GameLogic.associateUnitWithTile(unit,tile); //Do we need to add BasicCommand.drawUnit in associateUnitWithTile method?
-        GameLogic.notifyOpeningGambits();
-        gameState.getCurrentPlayer().addUnits(unit);
-
-        gameState.getCurrentPlayer().getCardManager().repositionHandCards(ref, gameState.getHandPosition());
     }
 
 }
