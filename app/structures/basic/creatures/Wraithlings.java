@@ -4,10 +4,18 @@ import structures.basic.Unit;
 import utils.BasicObjectBuilders;
 import utils.StaticConfFiles;
 
+/*
+ *  Wraithlings.java
+ *    
+ *  This class extends Unit. Represents a token that
+ *  is not associated with a card.
+ */
+
 public class Wraithlings extends Unit {
 	
 	final static int DEFAULT_HEALTH = 1;
 	final static int DEFAULT_ATTACK = 1;
+	static int wraithlingsID = 43;
 	
 	Wraithlings(){
 		super();
@@ -16,8 +24,16 @@ public class Wraithlings extends Unit {
 		this.setHumanUnit(true);
 	}
 	
+	/*
+	 *  Create a wraithling and update its other attributes
+	 *  
+	 */
 	public static Unit createWraithling() {
-		// For wraithlings setting the id as -1 (I guess we might not need any tracking with the id)
-		return BasicObjectBuilders.loadUnit(StaticConfFiles.wraithling, -1, Wraithlings.class);
+		// Load the unit
+		Unit unit =  BasicObjectBuilders.loadUnit(StaticConfFiles.wraithling, wraithlingsID++, Wraithlings.class);
+		unit.setMaximumHealth(unit.getHealth());
+		unit.setHumanUnit(true);
+
+		return unit;
 	}
 }

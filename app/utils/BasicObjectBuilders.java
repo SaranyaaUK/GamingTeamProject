@@ -222,11 +222,10 @@ public class BasicObjectBuilders {
 	}
 	
 	/**
-	 * Load a grid object
+	 * Generates a grid object
 	 * 
-	 * @return the Grid object
+	 * @return Grid
 	 */
-
 	public static Grid loadGrid() {
 		Grid myGrid = Grid.constructGrid(StaticConfFiles.gridConf);
 		return myGrid;

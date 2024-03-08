@@ -4,53 +4,61 @@ import java.util.List;
 
 import akka.actor.ActorRef;
 import commands.BasicCommands;
+import gamelogic.Actions;
 import structures.GameState;
-import structures.basic.GameLogic;
-import structures.basic.Tile;
-import structures.basic.Unit;
-import structures.basic.UnitAnimationType;
-import utils.TilesGenerator;
+import structures.basic.*;
+import utils.*;
+
+/**
+ *  TrueStrike.java
+ *  
+ *  This class implements the Spell interface, gives the target tiles to highlight when
+ *  the corresponding card is chosen and the effect to apply when the spell is casted.
+ */
 
 public class TrueStrike implements Spell {
 
 	final int updateHealth = 2;
+	
+	/**
+	 *  Spell cast actions
+	 *  
+	 *  @param out (ActorRef)
+	 *  @param tile (Tile)
+	 *  
+	 */
 	@Override
 	public void applySpell(ActorRef out, Tile tile) {
-
 		Unit target = tile.getUnit();
 
 		int updatedHealth = Math.max(target.getHealth() - updateHealth, 0);
 		// Reduce the target unit's health by 2
 		target.setHealth(updatedHealth);
 		
+		// Play the effect animation
+		EffectAnimation buffEffect = BasicObjectBuilders.loadEffect(StaticConfFiles.f1_inmolation);
+		BasicCommands.playEffectAnimation(out, buffEffect, tile);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		
 		// Update target's health
         BasicCommands.setUnitHealth(out, target, updatedHealth);
-        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+        try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
-		if (target.getHealth() == 0) {
-        	// Target plays the death animation
-            BasicCommands.playUnitAnimation(out, target, UnitAnimationType.death);
-            try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
-            
-        	//Remove unit
-            // If actual attack remove unit from the player's opponent list
-            if(GameState.getInstance().isCurrentPlayerHuman()) {
-            	tile.setUnit(null);
-                GameState.getInstance().getAIPlayer().getMyUnits().remove(target);
-            } else {
-            	tile.setUnit(null);
-            	GameState.getInstance().getHumanPlayer().getMyUnits().remove(target);
-            }
-        	BasicCommands.deleteUnit(out, target);
-        	try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
-        	
-        	// Check for End game - avatars dying <TO ADD>
-        	
-        	// Notify DeathWatchers
-        	GameLogic.notifyDeathWatchers(out);
+        // Update the Player's health if the avatar was target
+        GameLogic.updatePlayerHealth(out, target);
+
+        if (target.getHealth() == 0) {
+        	Actions.unitDeathAction(out, target);
         }
 	}
 
+	/**
+	 *  Return the tiles to be highlighted when the corresponding spell card 
+	 *  is selected
+	 *  
+	 *  @return List<Tile>
+	 *  
+	 */
 	@Override
 	public List<Tile> getTargetTilesToHighlight() {
 

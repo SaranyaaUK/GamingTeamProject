@@ -28,7 +28,7 @@ public class Tile {
 	int tilex;
 	int tiley;
 	
-	private Unit unit;
+	private Unit unit; // Unit assosicated with the tile
 
 	public Tile() {}
 	

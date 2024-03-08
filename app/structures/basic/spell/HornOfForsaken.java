@@ -9,10 +9,24 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import utils.TilesGenerator;
 
+/*
+ *  HornOfForsaken.java
+ *  
+ *  This class implements the Spell interface, gives the target tiles to highlight when
+ *  the corresponding card is chosen and the effect to apply when the spell is casted.
+ */
+
 public class HornOfForsaken implements Spell {
 
 	final int avatarArtifact = 3;
 
+	/**
+	 *  Spell cast actions
+	 *  
+	 *  @param out (ActorRef)
+	 *  @param tile (Tile)
+	 *  
+	 */
 	@Override
 	public void applySpell(ActorRef out, Tile tile) {
 
@@ -23,10 +37,19 @@ public class HornOfForsaken implements Spell {
 		Player humanPlayer = gameState.getHumanPlayer();
 
 		Unit humanAvatar = humanPlayer.getAvatar();
-		// If the spell is casted when avatar is already having this attribute it is overriden
+		
+		// If the spell is casted again when avatar is already having 
+		// positive artifact value, then it is overriden
 		humanAvatar.setArtifact(avatarArtifact);
 	}
 
+	/**
+	 *  Return the tiles to be highlighted when the corresponding spell card 
+	 *  is selected
+	 *  
+	 *  @return List<Tile>
+	 *  
+	 */
 	@Override
 	public List<Tile> getTargetTilesToHighlight() {
 
@@ -40,5 +63,4 @@ public class HornOfForsaken implements Spell {
 
 		return toHighlightTiles;
 	}
-
 }

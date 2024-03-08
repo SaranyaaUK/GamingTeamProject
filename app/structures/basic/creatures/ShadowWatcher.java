@@ -5,8 +5,17 @@ import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.Unit;
 
+/*
+ *  ShadowWatcher.java
+ *  
+ *  This class implements the Death interface, reacts when a unit dies on the board
+ *  
+ */
 public class ShadowWatcher extends Unit implements DeathWatch {
 
+	/*
+	 *  Reacts to death of any unit on the board
+	 */
 	@Override
 	public void reactToDeath(ActorRef out) {
 		// TODO Auto-generated method stub

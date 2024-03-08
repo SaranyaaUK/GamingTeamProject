@@ -24,6 +24,7 @@ public class OrderedCardLoader {
 	
 		List<Card> cardsInDeck = new ArrayList<Card>(20);
 		
+		// Updated the cardID
 		int cardID = 1;
 		for (int i =0; i<copies; i++) {
 			for (String filename : new File(cardsDIR).list()) {
@@ -47,7 +48,8 @@ public class OrderedCardLoader {
 	
 		List<Card> cardsInDeck = new ArrayList<Card>(20);
 		
-		int cardID = 1;
+		// Updated the card ID
+		int cardID = 21;
 		for (int i =0; i<copies; i++) {
 			for (String filename : new File(cardsDIR).list()) {
 				if (filename.startsWith("2_")) {

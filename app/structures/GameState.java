@@ -16,10 +16,9 @@ public class GameState {
     public static final int INITIAL_HEALTH = 20;
     public static final int INITIAL_MANA = 0;
     public static final int INITIAL_ATTACK = 2;
+    public static final int MAXIMUM_MANA = 9;
 
     public boolean gameInitialised = false;
-    public boolean endTurnClicked = false;
-    public boolean something = false;
 
     private Grid grid; // Represents the game grid (Tiles on the board)
     private Player humanPlayer; // Human player
@@ -32,8 +31,10 @@ public class GameState {
     private Set<Tile> highlightedFriendlyTiles;
     private Set<Tile> highlightedEnemyTiles;
     private static GameState gameState;
+    private boolean endTurnClicked;
+    private boolean gameEnded;
 
-    // Constructors
+	// Constructors
     private GameState() {
         // Initialize default values
         this.gameInitialised = false;
@@ -42,6 +43,8 @@ public class GameState {
         this.spellToCast = null;
         this.highlightedFriendlyTiles = new HashSet<Tile>();
         this.highlightedEnemyTiles = new HashSet<Tile>();
+        this.endTurnClicked = false;
+        this.gameEnded = false;
     }
 
     public static GameState getInstance() {
@@ -56,7 +59,7 @@ public class GameState {
         return gameInitialised;
     }
 
-    public void setGameInitialised(boolean gameInitialized) {
+    public void setGameInitialised(boolean gameInitialised) {
         this.gameInitialised = gameInitialised;
     }
 
@@ -158,24 +161,31 @@ public class GameState {
         this.highlightedEnemyTiles.addAll(toHighlightTiles);
     }
 
-    // Method to increment the turn
+    public boolean isEndTurnClicked() {
+		return endTurnClicked;
+	}
+
+	public void setEndTurnClicked(boolean endTurnClicked) {
+		this.endTurnClicked = endTurnClicked;
+	}
+
+    public boolean isGameEnded() {
+		return gameEnded;
+	}
+
+	public void setGameEnded(boolean gameEnded) {
+		this.gameEnded = gameEnded;
+	}
+
+	// Method to increment the turn
     public void nextTurn() {
         this.turn++;
-        // Additional logic for turn transition can be added here
-        // For example, updating player mana based on the new turn
-        updatePlayersMana();
     }
 
-    // method to update players' mana at the start of each turn
-    private void updatePlayersMana() {
-        if (humanPlayer != null) {
-            humanPlayer.setMana(this.turn + 1); // Assuming mana is turn + 1
-        }
-        if (AIPlayer != null) {
-            AIPlayer.setMana(this.turn + 1);
-        }
-    }
-
+    /*
+     *  swtichCurrentPlayer()
+     *  
+     */
     public void switchCurrentPlayer() {
         if (currentPlayer.equals(humanPlayer)) {
             currentPlayer = AIPlayer;
@@ -184,9 +194,22 @@ public class GameState {
         }
     }
     
+    /*
+     *  isCurrentPlayerHuman()
+     * 
+     *  @return boolean - True if current player is human
+     */
     public boolean isCurrentPlayerHuman() {
     	return currentPlayer.equals(humanPlayer);
     }
+    
+    /*
+     *  isSpellWraithlingSwarm
+     *  
+     *  @return boolean - True if current spell to be casted is 
+     *  WraithlingSwarm
+     *  
+     */
     
     public boolean isSpellWraithlingSwarm() {
     	if (!(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm)){
@@ -194,23 +217,4 @@ public class GameState {
     	}
     	return false;
     }
-    
-    public static boolean wraithlingSummonStatus() {
-    	GameState gameState = GameState.getInstance();
-    	Spell spellToCast = gameState.getSpellToCast();
-		if (! (spellToCast == null)) {
-			if (gameState.isSpellWraithlingSwarm()) {
-				int numWraithlingSummoned = ((WraithlingSwarm) spellToCast).getNumWraithlings();
-				if (numWraithlingSummoned == 0) {
-					return false;
-				}
-				if (numWraithlingSummoned < WraithlingSwarm.maximumWraithlings) {
-					return true;
-				}
-			}
-		}
-		return false;
-    }
-
-
 }

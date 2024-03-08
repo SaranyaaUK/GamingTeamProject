@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 
  * CardManager helps to manage the deck and hand cards for the player
  * 
  */
 
 public class CardManager {
 
-    // Player's Deck
+	// Player's Deck
     private List<Card> myDeck;
-    // Player's Hand cards
+    // Player's Hand cards 
     private List<Card> myHandCards;
     // Maximum allowable cards in hand
     public final int MAX_HAND_CARDS = 6;
@@ -47,11 +48,11 @@ public class CardManager {
      * @return true if the operation is successful, false if the deck is empty
      *         before drawing all cards.
      */
-    public boolean drawCardFromDeck(int CardCount) {
+    public boolean drawCardFromDeck(int cardCount) {
         if (isDeckEmpty()) {
             return false;
         }
-        for (int i = 0; i < CardCount; i++) {
+        for (int i = 0; i < cardCount; i++) {
             Card currentCard = myDeck.remove(0); // Always take card from the first position
             if (myHandCards.size() < MAX_HAND_CARDS) {
                 myHandCards.add(currentCard);
@@ -60,39 +61,52 @@ public class CardManager {
         return true;
     }
 
-    /*
-     * Gives the deck status
-     * 
-     * @return true if the deck is empty, else false.
+    /**
+     *  Gives the deck status
+     *  
+     *  @return true if the deck is empty, else false.
      */
     public boolean isDeckEmpty() {
         return myDeck.isEmpty();
     }
 
-    /*
-     * Gives the hand cards
+    /**
+     * getHandCards
      * 
-     * return list of cards in hand
+     *  @return list of cards in hand
      */
     public List<Card> getHandCards() {
         return this.myHandCards;
     }
-
-    /*
-     * Delete card
+    
+    /**
+     * deleteHandCardAt
+     *  
+     *  @param handPosition(int)
+     *  
      */
     public void deleteHandCardAt(int handPosition) {
-        this.myHandCards.remove(handPosition);
+    	this.myHandCards.remove(handPosition);
     }
-
+    
     /*
-     * Get card
+     *  getHandCardAt
+     *  
+     *  @param handPosition(int)
+     *  @return Card
+     *  
      */
     public Card getHandCardAt(int handPosition) {
-        return this.myHandCards.get(handPosition);
+    	return this.myHandCards.get(handPosition);
     }
-
+    
+    /*
+     *  getDeck
+     *  
+     *  @return List<Deck>
+     *  
+     */
     public List<Card> getMyDeck() {
-        return this.myDeck;
+    	return this.myDeck;
     }
 }

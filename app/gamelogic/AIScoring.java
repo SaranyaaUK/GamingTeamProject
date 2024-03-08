@@ -166,10 +166,9 @@ public class AIScoring {
             score += Bounty.GENERAL_HP; // Add a score proportional to the Avatar's health
         }
         // check if it is valuable， assume human player will target the unit
-        if(target.getUnit()==getBestActionForUnit().getValue){
-
-        }
-///////////
+//        if(target.getUnit() == getBestActionForUnit().getValue){
+//
+//        }
         // Sundrop Elixir heals for 4 points
         int healAmount = 4;
 
@@ -182,6 +181,7 @@ public class AIScoring {
         }
         return score;
     }
+
     public static int healingOverflow(Tile target, int healAmount){
         int healthLimit = target.getUnit().getMaximumHealth();
         int health = target.getUnit().getHealth();

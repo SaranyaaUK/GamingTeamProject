@@ -29,15 +29,23 @@ public class AIPlayer extends Player {
     }
     
     @Override
-    /*
+    /**
+     *  getAvatarConfig()
+     *  
 	 *  Get the avatar's configuration file
+	 *  
+	 *  @return String
 	 */
     public String getAvatarConfig() {
         return StaticConfFiles.aiAvatar;
     }
 
-    /*
+    /**
+     *  loadAvatar()
+     *  
 	 *  Loads the avatar using the config file
+	 *  
+	 *  @return Unit
 	 */
     private Unit loadAvatar() {
         int aiAvatarID = getAvatarID(); // This assumes avatars are uniquely identified
@@ -52,8 +60,10 @@ public class AIPlayer extends Player {
 		return avatar;
     }
     
-    /*
-	 *  @returns  A unique id to identify the avatar
+    /**
+     *  getAvatarID()
+     *  
+	 *  @returns  A unique id to identify the AI's avatar
 	 */
 	public int getAvatarID() {
 		return 42;

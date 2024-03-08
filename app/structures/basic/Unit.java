@@ -173,9 +173,6 @@ public class Unit {
 		this.artifact = artifact;
 	}
 
-	public void decrementArtifact() {
-		this.artifact--;
-	}
 	/**
 	 * This command sets the position of the Unit to a specified
 	 * tile.

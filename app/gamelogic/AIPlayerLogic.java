@@ -8,6 +8,7 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.spell.Spell;
 import utils.TilesGenerator;
+import gamelogic.AIScoring;
 
 import java.util.*;
 
@@ -46,7 +47,8 @@ public class AIPlayerLogic implements Runnable {
             if (card instanceof Spell) {
                 Tile bestTargetForSpellCard = AIScoring.findBestTargetForSpellCard((Spell) card);
                 if (bestTargetForSpellCard != null) {
-                    ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
+                	// Uncomment after you implement the overloaded method
+                    // ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
                 }
             }
         }
@@ -60,7 +62,8 @@ public class AIPlayerLogic implements Runnable {
             if (!(card instanceof Spell)) {
                 Tile bestPositionForSummonCreature = AIScoring.findBestPositionForSummonCreature(card);
                 if (bestPositionForSummonCreature != null) {
-                    ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
+                	// Uncomment after you implement the overloaded method
+                    // ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
                 }
             }
         }

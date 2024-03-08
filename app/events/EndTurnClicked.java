@@ -20,14 +20,22 @@ public class EndTurnClicked implements EventProcessor {
 
     @Override
     public void processEvent(ActorRef out, GameState gameState, JsonNode message) {
-
-    	gameState.endTurnClicked = true;
-        if (gameState.getCurrentPlayer() != gameState.getHumanPlayer()) {
+    	
+    	// Return 
+    	// 1. if the end-turn being triggered during AI's turn
+    	// 2. if game ended
+        if (!gameState.isCurrentPlayerHuman() || gameState.isGameEnded()) {
             return;
         }
-
+        
+        // Set end-turn clicked 
+        gameState.setEndTurnClicked(true);
+        
+        // Process events that have to triggered when the end turn button is clicked
         ProcessEndTurnClicked.processEndTurnClicked(out);
-        gameState.endTurnClicked = false;
+        
+        // Reset end-turn in the gameState
+        gameState.setEndTurnClicked(false);
     }
 
 }

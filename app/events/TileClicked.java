@@ -29,15 +29,19 @@ public class TileClicked implements EventProcessor{
 		int tilex = message.get("tilex").asInt();
 		int tiley = message.get("tiley").asInt();
 
-		if (gameState.getCurrentPlayer() != gameState.getHumanPlayer()) {
+		// Return 
+		// 1. if the game ended or 
+		// 2. if tiles are clicked during AI's turn
+		if (gameState.isGameEnded()) {
+			return;
+		}
+		if (gameState.isGameEnded() || !gameState.isCurrentPlayerHuman()) {
 			return;
 		}
 		
+		// Process events that happen upon clicking a tile
 		ProcessTileClicked.dispatchAfterTileClicked(out, gameState.getGrid().getTile(tilex, tiley));
-//		if (gameState.something == true) {
-//			// do some logic
-//		}
-		
+
 	}
 
 }

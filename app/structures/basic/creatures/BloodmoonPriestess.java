@@ -4,13 +4,22 @@ import java.util.List;
 
 import akka.actor.ActorRef;
 import gamelogic.Actions;
-import structures.GameState;
 import structures.basic.Tile;
 import structures.basic.Unit;
 import utils.TilesGenerator;
 
+/*
+ *  BloodmoonPriestess.java
+ *  
+ *  This class implements the Death interface, reacts when a unit dies on the board
+ *  
+ */
+
 public class BloodmoonPriestess extends Unit implements DeathWatch {
 
+	/*
+	 *  Reacts to death of any unit on the board
+	 */
 	@Override
 	public void reactToDeath(ActorRef out) {
 		// Summon a wraithling to a randomly selected unoccupied adjacent tile, 
@@ -19,9 +28,9 @@ public class BloodmoonPriestess extends Unit implements DeathWatch {
 
 		for (Tile tile: adjacentTiles) {
 			// Can add some randomness - can try later <TO DO>
-			// For now just find the first available tile
+			// For now just find the first available tile (unoccupied tile)
 			if (tile.getUnit() == null) {
-				Actions.placeUnit(out, tile);
+				Actions.placeWraithling(out, tile);
 				break;
 			}
 		}

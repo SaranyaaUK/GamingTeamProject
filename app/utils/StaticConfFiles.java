@@ -26,5 +26,7 @@ public class StaticConfFiles {
 	public final static String f1_martyrdom = "conf/gameconfs/effects/f1_martyrdom.json";
 	public final static String f1_projectiles = "conf/gameconfs/effects/f1_projectiles.json";
 	public final static String f1_summon = "conf/gameconfs/effects/f1_summon.json";
+	// Wraithling Summon effect
+	public final static String f1_warithsummon = "conf/gameconfs/effects/f1_wraithsummon.json";
 	
 }

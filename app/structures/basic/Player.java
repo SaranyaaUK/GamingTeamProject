@@ -81,15 +81,23 @@ public class Player {
 		this.myUnits.add(unit);
 	}
 
-	/*
+	/**
+     *  getAvatarConfig()
+     *  
 	 *  Get the avatar's configuration file
+	 *  
+	 *  @return String
 	 */
 	public String getAvatarConfig() {
 		return StaticConfFiles.humanAvatar;
 	}
 
-	/*
+	 /**
+     *  loadAvatar()
+     *  
 	 *  Loads the avatar using the config file
+	 *  
+	 *  @return Unit
 	 */
 	private Unit loadAvatar() {
 		int humanAvatarID = getAvatarID(); // To uniquely identify the avatar
@@ -104,21 +112,28 @@ public class Player {
 		return avatar;
 	}
 
-	/*
+	/**
+	 *  isMyDeckEmpty()
+	 *  
 	 *  @returns True if the player's deck is empty
+	 *  
 	 */
 	public boolean isMyDeckEmpty() {
 		return myCardManager.isDeckEmpty();
 	}
 	
-	/*
+	/**
+	 *  getMyHandCards()
+	 *  
 	 *  @returns the player's hand cards
 	 */
 	public List<Card> getMyHandCards() {
 		return myCardManager.getHandCards();
 	}
 	
-	/*
+	/**
+	 *  getAvatarID()
+	 *  
 	 *  @returns  A unique id to identify the avatar
 	 */
 	public int getAvatarID() {
