@@ -151,7 +151,6 @@ public class Actions {
 		BasicCommands.dehighlightTiles(out);
 		unit.setMoved(true);
 		GameLogic.associateUnitWithTile(unit, tile);
-
 		// Set the animation back to idle after move is done
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.idle);
 		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
@@ -244,18 +243,10 @@ public class Actions {
 
 		// Set the units animation to idle after attack
 		BasicCommands.playUnitAnimation(ref, unit, UnitAnimationType.idle);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
 		BasicCommands.playUnitAnimation(ref, target, UnitAnimationType.idle);
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 
 	/**
@@ -268,10 +259,8 @@ public class Actions {
 	 */
 	private static boolean isAdjacent(Unit unit1, Unit unit2) {
 		// Check the distance between the unit's tiles
-		return ((Math.abs(unit1.getPosition().getTilex() - unit2.getPosition().getTilex()) == 1
-				&& unit1.getPosition().getTiley() == unit1.getPosition().getTiley()) ||
-				(Math.abs(unit1.getPosition().getTiley() - unit2.getPosition().getTiley()) == 1
-						&& unit1.getPosition().getTilex() == unit2.getPosition().getTilex()));
+		return ((Math.abs(unit1.getPosition().getTilex() - unit2.getPosition().getTilex()) <= 1) && 
+				(Math.abs(unit1.getPosition().getTiley() - unit2.getPosition().getTiley()) <= 1));
 
 	}
 
@@ -284,7 +273,6 @@ public class Actions {
 	 * 
 	 */
 	public static void unitAdjacentAttack(ActorRef ref, Unit unit, Unit target) {
-
 		// enemy unit get damage
 		int damageToTarget = unit.getAttack();
 
@@ -299,6 +287,7 @@ public class Actions {
 			// Should check if the unit (the new defender)
 			// is in adjacent position to the target (new attacker)
 			// if not the counter attack does not take place
+			System.out.println("IN UNIT ADJACENT ATTACK");			
 			if (isAdjacent(target, unit)) {
 				counterAttack(ref, target, unit);
 			}
@@ -318,6 +307,7 @@ public class Actions {
 	 * 
 	 */
 	public static void counterAttack(ActorRef ref, Unit unit, Unit target) {
+		System.out.println("IN COUNTER ATTACK");	
 		int damageToTarget = unit.getAttack();
 		int updatedTargetHealth = Math.max(target.getHealth() - damageToTarget, 0);
 		target.setHealth(updatedTargetHealth);
