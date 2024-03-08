@@ -425,4 +425,7 @@ public class TilesGenerator {
         return false;
     }
 
+    public static List<Tile> getAdjacentEnemyTiles(Tile tile) {
+        return null;
+    }
 }
