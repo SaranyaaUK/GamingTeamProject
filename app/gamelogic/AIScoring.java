@@ -160,8 +160,39 @@ public class AIScoring {
     //check the unit near enemy avatar
     //check how many amount of heal(4) can be used
     private static double getScoreForSundropElixir(Tile target) {
-        return 0;
+        double score =0.0;
+        // Check if the target tile contains the player's Avatar !!!need to change the id to AI avatar's id!!!
+        if (target.getUnit() != null && target.getUnit().getId()==1) {
+            score += Bounty.GENERAL_HP; // Add a score proportional to the Avatar's health
+        }
+        // check if it is valuable， assume human player will target the unit
+        if(target.getUnit()==getBestActionForUnit().getValue){
+
+        }
+///////////
+        // Sundrop Elixir heals for 4 points
+        int healAmount = 4;
+
+        // Check if the healing will overflow the unit's health
+        if (healingOverflow(target, healAmount)>0) {
+            score += Bounty.HEALING_OVERHEAL*(healingOverflow(target, healAmount)); // Deduct a score for healing overflow
+        } else {
+            // Add a score proportional to the amount of healing
+            score += healAmount * Bounty.HEALING_PER_UNIT_SCORE;
+        }
+        return score;
     }
+    public static int healingOverflow(Tile target, int healAmount){
+        int healthLimit = target.getUnit().getMaximumHealth();
+        int health = target.getUnit().getHealth();
+        if((health+healAmount)>healthLimit){
+            return health+healAmount-healthLimit;
+        }else {
+            return -healAmount;
+        }
+
+    }
+
 
 
 }
