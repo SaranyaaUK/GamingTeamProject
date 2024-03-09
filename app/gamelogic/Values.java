@@ -1,7 +1,9 @@
 package gamelogic;
 
+import commands.BasicCommands;
 import structures.GameState;
 import structures.basic.*;
+import structures.basic.creatures.*;
 import utils.TilesGenerator;
 
 import static gamelogic.ScoreForUnitAction.*;
@@ -20,8 +22,38 @@ public class Values {
     }
 
     public static double getDeathWatchValue(Unit unit){
+        if(!(unit instanceof DeathWatch)){return 0;}
+        Class<? extends Unit> UnitType= unit.getClass();
+
+        if(UnitType== BadOmen.class){
+
+            return 1*getUnitValue(unit)*BOUNTY.UNIT_ATK;
+        }
+        if(UnitType== ShadowWatcher.class){
+            double gainATKscore=1*getUnitValue(unit)*BOUNTY.UNIT_ATK;
+            double gainHPscore=1*getUnitValue(unit)*BOUNTY.UNIT_HP;
+            return gainHPscore+gainATKscore;
+        }
+        if(UnitType== BloodmoonPriestess.class){
+            Tile[] adjacentTiles=TilesGenerator.getAdjacentTiles(unit);
+            if(adjacentTiles.length==0){return 0;}
+            return 2.5;
+
+        }
+        if(UnitType== ShadowDancer.class){
+            double damageScore= getDamageScore(GameState.getInstance().getAIPlayer().getAvatar(),1);
+            double healScore= getHealScore(unit,1);
+
+            return damageScore+healScore;
+
+        }
 
 
+
+        return 0;
+    }
+
+    private static double getHealScore(Unit unit, int healHP) {
         return 0;
     }
 
@@ -52,7 +84,7 @@ public class Values {
         double hpLossScore=0;
         double deathWatchScore=0;
 
-        
+        //get modifier=unit value+ position  ~30 * ~?
         double myUnitModifier = getUnitValue(targetUnit) * getScoreForPosition(targetUnit, TilesGenerator.getUnitTile(targetUnit));
 
         int targetHP=targetUnit.getHealth();
@@ -74,7 +106,7 @@ public class Values {
         Tile[][] Tiles = GameState.getInstance().getGrid().getBoardTiles();
         for (Tile[] tiles : Tiles) {
             for (Tile tile : tiles) {
-                deathWatchScore += ((lethal) ? DeathWatchValue.getUnitDeathWatchValue(tile.getUnit()) : 0);
+                deathWatchScore += ((lethal) ? getDeathWatchValue(tile.getUnit()) : 0);
             }
         }
 
@@ -83,7 +115,9 @@ public class Values {
 
 
 
-        return 0.03*score * myUnitModifier;
+
+        if(targetUnit.isHumanUnit()){return 0.03*score * myUnitModifier-deathWatchScore;}
+        else{return 0.03*score * myUnitModifier+deathWatchScore;}
 
     }
 
