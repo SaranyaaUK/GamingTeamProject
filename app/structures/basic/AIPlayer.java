@@ -19,7 +19,6 @@ public class AIPlayer extends Player {
 
     public AIPlayer() {
         super();
-        this.setAvatar(loadAvatar());
     }
 
     public AIPlayer(int health, int mana) {
@@ -50,7 +49,6 @@ public class AIPlayer extends Player {
     private Unit loadAvatar() {
         int aiAvatarID = getAvatarID(); // This assumes avatars are uniquely identified
         Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), aiAvatarID, Unit.class);
-		this.addUnits(avatar);
 		avatar.setHealth(GameState.INITIAL_HEALTH);
 		avatar.setAttack(GameState.INITIAL_ATTACK);
 		avatar.setMaximumHealth(avatar.getHealth());

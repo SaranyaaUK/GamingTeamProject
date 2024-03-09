@@ -125,6 +125,11 @@ public class TilesGenerator {
 		unitTiles.removeAll(getFriendlyUnitTiles());
 		unitTiles.removeAll(getEnemyUnitTiles());
 
+		// Remove dupilcates if any
+		Set<Tile> set = new HashSet<Tile>(unitTiles);
+		unitTiles.clear(); // Clear the original list
+		unitTiles.addAll(set);
+
 		return unitTiles;
 	}
 
@@ -154,8 +159,8 @@ public class TilesGenerator {
 			front = tilex+1;
 			behind = tilex-1;    	
 		} else {
-			front = tilex+1;
-			behind = tilex-1;
+			front = tilex-1;
+			behind = tilex+1;
 		}
 
 		// Second Cardinal Tile addition logic
@@ -234,19 +239,19 @@ public class TilesGenerator {
 	public static List<Tile> removeDiagonalTiles(List<Tile> unitTiles, int tilex, int tiley, int above, int below, int front, int behind) {
 		GameState gameState = GameState.getInstance();
 		Grid myGrid = gameState.getGrid();
-		
+
 		// Logic to check if the diagonal tiles have to be included
 		if((TilesGenerator.isValidTile(front, tiley) && (myGrid.getTile(front, tiley).getUnit() != null &&
 				GameLogic.isEnemyUnit(myGrid.getTile(front, tiley).getUnit())))
 				&& (TilesGenerator.isValidTile(tilex, above) && (myGrid.getTile(tilex, above).getUnit() != null &&
-				GameLogic.isEnemyUnit(myGrid.getTile(front, above).getUnit())))) {
+				GameLogic.isEnemyUnit(myGrid.getTile(tilex, above).getUnit())))) {
 			unitTiles.remove(myGrid.getTile(front, above));
 		}
 
 		if((TilesGenerator.isValidTile(front, tiley) && (myGrid.getTile(front, tiley).getUnit() != null &&
 				GameLogic.isEnemyUnit(myGrid.getTile(front, tiley).getUnit())))
 				&& (TilesGenerator.isValidTile(tilex, below) && (myGrid.getTile(tilex, below).getUnit() != null &&
-				GameLogic.isEnemyUnit(myGrid.getTile(front, below).getUnit())))) {
+				GameLogic.isEnemyUnit(myGrid.getTile(tilex, below).getUnit())))) {
 			unitTiles.remove(myGrid.getTile(front, below));
 		}
 
@@ -334,8 +339,8 @@ public class TilesGenerator {
 
 		return unitTiles;
 	}
-	
-	
+
+
 	/**
 	 *  getAttackableTiles
 	 *  

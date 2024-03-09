@@ -27,6 +27,7 @@ public class Player {
 
 	public Player () {
 		this(GameState.INITIAL_HEALTH, GameState.INITIAL_MANA);
+		this.addUnits(getAvatar());
 	}
 
 	public Player(int health, int mana) {
@@ -37,7 +38,6 @@ public class Player {
 		// Set the CardManager and the avatar
 		setCardManager(new CardManager(true));
 		setAvatar(loadAvatar());
-		
 	}
 
 	// Getter and Setters
@@ -102,7 +102,6 @@ public class Player {
 	private Unit loadAvatar() {
 		int humanAvatarID = getAvatarID(); // To uniquely identify the avatar
 		Unit avatar = BasicObjectBuilders.loadUnit(getAvatarConfig(), humanAvatarID, Unit.class);
-		this.addUnits(avatar);
 		avatar.setHumanUnit(true);
 		avatar.setHealth(GameState.INITIAL_HEALTH);
 		avatar.setAttack(GameState.INITIAL_ATTACK);
