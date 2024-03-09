@@ -120,7 +120,10 @@ public class AIScoring {
         //check if it is lethal
         //if so, check attack and hp change triggered by the deathwatch
 
-        return 0.0;
+        double myAtkDamage= Values.getDamageScore(target,unit.getAttack());
+        double enemyAtkDamage= Values.getDamageScore(unit,target.getAttack());
+
+        return myAtkDamage+enemyAtkDamage;
 
     }
 
@@ -153,6 +156,7 @@ public class AIScoring {
     private static double getScoreForTrueStrike(Tile target) {
         return 0;
     }
+
 
 
     //check my avatar
@@ -191,6 +195,14 @@ public class AIScoring {
             return -healAmount;
         }
 
+    }
+
+    private static int getUnitDistance(Unit unit1, Unit unit2) {
+
+        int X = Math.abs(unit1.getPosition().getTilex() - unit2.getPosition().getTilex());
+        int Y = Math.abs(unit1.getPosition().getTiley() - unit2.getPosition().getTiley());
+
+        return X + Y;
     }
 
 
