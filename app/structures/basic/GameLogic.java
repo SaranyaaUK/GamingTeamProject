@@ -239,7 +239,7 @@ public class GameLogic {
 	 *  Given the card id - it returns the spell object associated with the card
 	 *  
 	 */
-	private static Spell getSpellObject(int id) {
+	public static Spell getSpellObject(int id) {
 		Spell mySpell = null;
 
 		switch (id) {

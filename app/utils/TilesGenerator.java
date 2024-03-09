@@ -336,6 +336,9 @@ public class TilesGenerator {
 				unitTiles.add(tile);
 			}
 		}
+		
+		// Remove the actual tile
+		unitTiles.remove(myTile);
 
 		return unitTiles;
 	}

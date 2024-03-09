@@ -10,8 +10,8 @@ public class ProcessEndTurnClicked {
 
         Actions.resetAfterOneTurn(out);
 
-        if (gameState.getCurrentPlayer() == gameState.getAIPlayer()) {
-            AIPlayerLogic logic = new AIPlayerLogic();
+        if (!gameState.isCurrentPlayerHuman()) {
+            AIPlayerLogic logic = new AIPlayerLogic(out, gameState);
             Thread ai = new Thread(logic);
             ai.start();
         }

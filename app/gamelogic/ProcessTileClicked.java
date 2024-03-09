@@ -102,20 +102,20 @@ public class ProcessTileClicked {
      *  @param unit (Unit)
      *  
      */
-    public static void processCardUse(ActorRef out, Unit unit) {
-    	processCardUse(out, TilesGenerator.getUnitTile(unit));
+    public static void processCardUse(ActorRef out, Tile tile) {
+        GameState gameState = GameState.getInstance();
+        Card card = gameState.getClickedCard();
+    	processCardUse(out, tile, card);
     }
     /**
      *  ProcessCardUse
      *  
      *  @param out (ActorRef)
      *  @param tile (Tile)
+     *  @param card (Card)
      *  
      */
-    public static void processCardUse(ActorRef out, Tile tile) {
-        GameState gameState = GameState.getInstance();
-        Card card = gameState.getClickedCard();
-        BasicCommands.addPlayer1Notification(out, tile.getTilex()+" "+tile.getTiley(), 2);
+    public static void processCardUse(ActorRef out, Tile tile, Card card) {
         if (card.getManacost() <= gameState.getCurrentPlayer().getMana()) {
         	// Update Mana
         	GameLogic.updateCurrentPlayerMana(out, gameState.getCurrentPlayer().getMana()-card.getManacost());
