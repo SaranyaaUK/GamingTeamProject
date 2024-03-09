@@ -8,7 +8,6 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.spell.Spell;
 import utils.TilesGenerator;
-import gamelogic.AIScoring;
 
 import java.util.*;
 
@@ -41,14 +40,13 @@ public class AIPlayerLogic implements Runnable {
 
         //First try to use spell cards as many as possible
         for (Card card : myHandCards) {
-            if (aiPlayer.getMana() <= card.getManacost()) {
-                break;
-            }
             if (card instanceof Spell) {
+                if (aiPlayer.getMana() <= card.getManacost()) {
+                    break;
+                }
                 Tile bestTargetForSpellCard = AIScoring.findBestTargetForSpellCard((Spell) card);
                 if (bestTargetForSpellCard != null) {
-                	// Uncomment after you implement the overloaded method
-                    // ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
+                    ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
                 }
             }
         }
@@ -56,14 +54,13 @@ public class AIPlayerLogic implements Runnable {
         //Then try to use creature cards as many as possible
 
         for (Card card : myHandCards) {
-            if (aiPlayer.getMana() <= card.getManacost()) {
-                break;
-            }
             if (!(card instanceof Spell)) {
+                if (aiPlayer.getMana() <= card.getManacost()) {
+                    break;
+                }
                 Tile bestPositionForSummonCreature = AIScoring.findBestPositionForSummonCreature(card);
                 if (bestPositionForSummonCreature != null) {
-                	// Uncomment after you implement the overloaded method
-                    // ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
+                    ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
                 }
             }
         }

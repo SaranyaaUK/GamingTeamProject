@@ -1,35 +1,34 @@
 package gamelogic;
 
-import java.util.List;
-
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
-import structures.basic.*;
-import structures.basic.creatures.*;
-import utils.*;
+import structures.basic.Card;
+import structures.basic.CardManager;
+import structures.basic.EffectAnimation;
+import structures.basic.GameLogic;
+import structures.basic.Grid;
+import structures.basic.Player;
+import structures.basic.Position;
+import structures.basic.Tile;
+import structures.basic.Unit;
+import structures.basic.UnitAnimationType;
+import structures.basic.creatures.OpeningGambit;
+import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
+import utils.TilesGenerator;
 
-/**
- * Actions.java
- * 
- * This class implements actions that follows after different events
- * 
- */
+import java.util.Collection;
+import java.util.List;
+
 public class Actions {
-
-	/**
-	 * ResetWithinOneTurn
-	 * 
-	 * Reset actions within one turn
-	 * 
-	 * @param out(ActorRef)
-	 */
 	public static void resetWithinOneTurn(ActorRef out) {
 		GameState gameState = GameState.getInstance();
-		if (!gameState.isEndTurnClicked() && GameLogic.wraithlingSummonStatus()) {
+		if (!gameState.endTurnClicked && GameState.wraithlingSummonStatus()) {
 			return;
 		}
 		BasicCommands.dehighlightTiles(out);
+
 		gameState.setHandPosition(-1);
 		gameState.setCurrentUnit(null);
 		gameState.setSpellToCast(null);
@@ -37,24 +36,15 @@ public class Actions {
 		gameState.getHighlightedEnemyTiles().clear();
 	}
 
-	/**
-	 * ResetAfterOneTurn
-	 * 
-	 * Reset actions within one turn
-	 *
-	 * reset all the unit's isExhausted/isMoved
-	 * remove all the highlight
-	 * reset handPosition
-	 * reset current player's Mana to 0
-	 * 
-	 * @param out (ActorRef)
-	 * 
-	 */
+	//reset all the unit's isExhausted/isMoved
+	//remove all the highlight
+	//reset handPosition
+	//reset current player's Mana to 0
 	public static void resetAfterOneTurn(ActorRef out) {
 
 		GameState gameState = GameState.getInstance();
-
-		if (GameLogic.wraithlingSummonStatus()) {
+		
+		if (GameState.wraithlingSummonStatus()) {
 			GameLogic.updateHandCardsView(out);
 		}
 		// Determine current player and next player
@@ -63,18 +53,15 @@ public class Actions {
 
 		// Clear current player's mana
 		currentPlayer.setMana(0);
-
-		// Do other resets - Similar to resetting within one turn
 		Actions.resetWithinOneTurn(out);
 
 		// CurrentPlayer's units need reset
-		for (Unit unit : currentPlayer.getMyUnits()) {
+		for(Unit unit: currentPlayer.getMyUnits()) {
 			resetUnitStatus(unit);
 		}
 
 		// Draw a card from deck
 		if (currentPlayer.isMyDeckEmpty()) {
-			gameState.setGameEnded(true);
 			BasicCommands.addPlayer1Notification(out, "Game Over", 100);
 		} else {
 			currentPlayer.getCardManager().drawCardFromDeck(1);
@@ -99,18 +86,20 @@ public class Actions {
 		// Now switch players
 		// looks similar to one in Initialise can have a common method (re check)
 		gameState.setCurrentPlayer(nextPlayer);
-		GameLogic.updateCurrentPlayerMana(out, Math.min(gameState.getTurn() + 1, GameState.MAXIMUM_MANA));
+		updateCurrentPlayerMana(out, gameState.getTurn() + 1);
 	}
 
-	/**
-	 * ResetUnitStatus
-	 * 
-	 * After one turn set all units isMoved and isExhausted attributes
-	 * if it is not stunned.
-	 * 
-	 * @param unit (Unit)
-	 * 
-	 */
+	public static void updateCurrentPlayerMana(ActorRef out, int mana) {
+		GameState gameState = GameState.getInstance();
+		gameState.getCurrentPlayer().setMana(mana);
+
+		if (gameState.isCurrentPlayerHuman()) {
+			BasicCommands.setPlayer1Mana(out, gameState.getCurrentPlayer());
+		} else {
+			BasicCommands.setPlayer2Mana(out, gameState.getCurrentPlayer());	
+		}
+	}
+
 	private static void resetUnitStatus(Unit unit) {
 		// All unit's isMoved and isAttacked need to be set to false,
 		// except for stunned unit.
@@ -123,356 +112,296 @@ public class Actions {
 		}
 	}
 
-	/**
-	 * UnitMove
-	 *
-	 * modify the state of unit
-	 * modify the tile
-	 * move animation
-	 * gamelogic.associateWithTile
-	 *
-	 * @param out  (ActorRef)
-	 * @param unit (Unit)
-	 * @param tile (Tile)
-	 * 
-	 */
+	//modify the state of unit
+	//modify the tile
+	//move animation
+	//gamelogic.associateWithTile
 	public static void unitMove(ActorRef out, Unit unit, Tile tile) {
 		// Check if Vertical movement is necessary
 		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.move);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
+		try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 		if (checkDiagonalMovement(unit, tile)) {
 			BasicCommands.moveUnitToTile(out, unit, tile, true);
-			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-		} else {
-			BasicCommands.moveUnitToTile(out, unit, tile); // move unit to chosen tiles
-			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+			try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
+		}
+		else {
+			BasicCommands.moveUnitToTile(out, unit, tile); //move unit to chosen tiles
+			try {Thread.sleep(2000);} catch (InterruptedException e) {e.printStackTrace();}
 		}
 		BasicCommands.dehighlightTiles(out);
 		unit.setMoved(true);
 		GameLogic.associateUnitWithTile(unit, tile);
-		// Set the animation back to idle after move is done
-		BasicCommands.playUnitAnimation(out, unit, UnitAnimationType.idle);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 	}
 
-	/**
-	 * CheckVerticalMovement
-	 * 
-	 * @param unit (Unit)
-	 * 
+	/*
+	 *  CheckVerticalMovement
 	 */
 	public static Boolean checkVerticalMovement(Unit unit) {
 		GameState gameState = GameState.getInstance();
 		Grid myGrid = gameState.getGrid();
-
+		
 		int unitx = unit.getPosition().getTilex();
 		int unity = unit.getPosition().getTiley();
 		if (TilesGenerator.isValidTile(unitx + 1, unity) || TilesGenerator.isValidTile(unitx - 1, unity))
 			return false;
-
+		
 		Player opponentPlayer = null;
 		if (gameState.isCurrentPlayerHuman()) {
 			opponentPlayer = gameState.getAIPlayer();
 		} else {
 			opponentPlayer = gameState.getHumanPlayer();
 		}
-		if (myGrid.getTile(unitx + 1, unity).getUnit() != null
-				&& opponentPlayer.getMyUnits().contains(myGrid.getTile(unitx + 1, unity).getUnit())) {
+		if (myGrid.getTile(unitx+1, unity).getUnit() != null && opponentPlayer.getMyUnits().contains(myGrid.getTile(unitx+1, unity).getUnit())) {
 			return true;
 		}
-		if (myGrid.getTile(unitx - 1, unity).getUnit() != null
-				&& opponentPlayer.getMyUnits().contains(myGrid.getTile(unitx - 1, unity).getUnit())) {
+		if (myGrid.getTile(unitx-1, unity).getUnit() != null && opponentPlayer.getMyUnits().contains(myGrid.getTile(unitx-1, unity).getUnit())) {
 			return true;
 		}
 		return false;
 
 	}
-
-	/**
-	 * CheckDiagonalMovement
-	 * 
-	 * Check if we have to move to a diagonal tile
-	 * 
-	 * @param unit (Unit)
-	 * @param tile (Tile)
-	 * 
+	
+	/*
+	 *  CheckDiagonalMovement
 	 */
-	public static boolean checkDiagonalMovement(Unit unit, Tile tile) {
+	public static boolean checkDiagonalMovement(Unit unit, Tile tile) {	    	
 		int unitx = unit.getPosition().getTilex();
 		int unity = unit.getPosition().getTiley();
+
 		// Check if we are moving to diagonal tiles
-		if (Math.abs(unitx - tile.getTilex()) == 1 && Math.abs(unity - tile.getTiley()) == 1) {
-			// Check if vertical movement is needed first
-			if (checkVerticalMovement(unit)) {
+		if (Math.abs(unitx - tile.getTilex())==1 && Math.abs(unity - tile.getTiley())==1 ) {
+			if(checkVerticalMovement(unit))
 				return true;
-			}
+			else 
+				return false;
 		}
 		return false;
 	}
 
-	/**
-	 * UnitAttack
-	 * 
-	 * check if the target is within the attack distance, if not, move first.
-	 * then calculate and update the health of target
-	 * do the counter-attack, if the unit survives
-	 * check for avatar attack actions
-	 * check if avatar dies, if so, end game
-	 * check if any unit dies, if so, notify DeathWatchers
-	 * unit attack animation
-	 * target hit animation, repeat for counter attack
-	 * idle animation after we hit/attack
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param unit   (Unit)
-	 * @param target (Unit)
-	 * 
-	 */
-
+	//check if the target if within the attack distance,if not, move first.
+	//then calculate and update the health of target
+	// do the counter-attack
+    // check if avatar dies, is so, end game
+    // check if any unit dies, if so, invoke DeathWatch
+    // unit attack animation
+    // target hit animation
 	public static void unitAttack(ActorRef ref, Unit unit, Unit target) {
-		if (isAdjacent(unit, target)) {
-			System.out.println("Unit Adjacent attack");
+		if (isAdjacent(unit,target)) {
 			// If target is just adjacent, just attack
-			unitAdjacentAttack(ref, unit, target);
-		} else {
-			System.out.println("Unit move and attack");
+			unitAdjacentAttack(ref,unit,target);
+		}else if(!isAdjacent(unit,target)){
 			// Else move and then attack
-			unitMoveAttack(ref, unit, target);
-		}
-
-		// Set the units animation to idle after attack
-		BasicCommands.playUnitAnimation(ref, unit, UnitAnimationType.idle);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
-		BasicCommands.playUnitAnimation(ref, target, UnitAnimationType.idle);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-	}
-
-	/**
-	 * isAdjacent
-	 * 
-	 * @param unit1 (Unit)
-	 * @param unit2 (Unit)
-	 * @return true (Boolean) if two units are adjacent to each other
-	 * 
-	 */
-	private static boolean isAdjacent(Unit unit1, Unit unit2) {
-		// Check the distance between the unit's tiles
-		return ((Math.abs(unit1.getPosition().getTilex() - unit2.getPosition().getTilex()) <= 1) && 
-				(Math.abs(unit1.getPosition().getTiley() - unit2.getPosition().getTiley()) <= 1));
-
-	}
-
-	/**
-	 * UnitAdjacentAttack
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param unit   (Unit)
-	 * @param target (Unit)
-	 * 
-	 */
-	public static void unitAdjacentAttack(ActorRef ref, Unit unit, Unit target) {
-		// enemy unit get damage
-		int damageToTarget = unit.getAttack();
-
-		int updatedTargetHealth = Math.max(target.getHealth() - damageToTarget, 0);
-		target.setHealth(updatedTargetHealth);
-
-		// Unit attack actions
-		unitAttackAction(ref, unit, target);
-
-		// if target is still alive then counter-attack
-		if (target.getHealth() > 0) {
-			// Should check if the unit (the new defender)
-			// is in adjacent position to the target (new attacker)
-			// if not the counter attack does not take place
-			System.out.println("IN UNIT ADJACENT ATTACK");			
-			if (isAdjacent(target, unit)) {
-				counterAttack(ref, target, unit);
-			}
-		} else if (target.getHealth() == 0) {
-			unitDeathAction(ref, target);
-		}
-		// Update exhaust status
-		unit.setExhausted(true);
-	}
-
-	/**
-	 * CounterAttack
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param unit   (Unit)
-	 * @param target (Unit)
-	 * 
-	 */
-	public static void counterAttack(ActorRef ref, Unit unit, Unit target) {
-		System.out.println("IN COUNTER ATTACK");	
-		int damageToTarget = unit.getAttack();
-		int updatedTargetHealth = Math.max(target.getHealth() - damageToTarget, 0);
-		target.setHealth(updatedTargetHealth);
-
-		// Unit attack actions
-		unitAttackAction(ref, unit, target);
-
-		// If died after counter-attack
-		if (target.getHealth() == 0) {
-			unitDeathAction(ref, target);
+			unitMoveAttack(ref,unit,target);
 		}
 	}
 
-	/**
-	 * UnitAttackAction
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param unit   (Unit)
-	 * @param target (Unit)
-	 * 
-	 */
-	public static void unitAttackAction(ActorRef ref, Unit unit, Unit target) {
-		// Front-end communication for unit attack
-		BasicCommands.attackUnit(ref, unit, target);
+    // Helper method to check if two units are adjacent to each other
+    private static boolean isAdjacent(Unit unit1, Unit unit2) {
+        // Assuming units are adjacent if they share the same X or Y coordinate
+        return Math.abs(unit1.getPosition().getTilex() - unit2.getPosition().getTilex()) == 1 ||
+                Math.abs(unit1.getPosition().getTiley() - unit2.getPosition().getTiley()) == 1;
+    }
 
-		// Check if avatar is attacked to trigger respective actions
-		GameLogic.reactToAvatarAttack(ref, target);
+    /*
+     *  UnitAdjacentAttack
+     */
+    public static void unitAdjacentAttack(ActorRef ref, Unit unit, Unit target){
+    	//enemy unit get damage
+    	int damageToTarget = unit.getAttack();
+    	int updatedTargetHealth =  Math.max(target.getHealth() - damageToTarget, 0);
+    	target.setHealth(updatedTargetHealth);
 
-		// Check if the avatar attacking
-		// Check the attacking unit (if it is avatar) - To trigger horn of Forsaken hit
-		// effect
-		GameLogic.reactToAvatarHit(ref, unit, target);
-	}
+    	// Unit attack actions
+    	unitAttackAction(ref, unit, target);
 
-	/**
-	 * UnitDeathAction
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param target (Unit)
-	 * 
-	 */
-	public static void unitDeathAction(ActorRef ref, Unit target) {
-		// Target plays the death animation
-		BasicCommands.playUnitAnimation(ref, target, UnitAnimationType.death);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+    	//if target is still alive then counter-attack
+    	if (updatedTargetHealth > 0){
+    		counterAttack(ref, target, unit);
+    	}
 
-		// Remove Unit
-		if (!target.isHumanUnit()) {
-			Tile tile = GameState.getInstance().getGrid().getTile(target.getPosition().getTilex(),
-					target.getPosition().getTiley());
-			tile.setUnit(null);
-			GameState.getInstance().getAIPlayer().getMyUnits().remove(target);
-		} else {
-			Tile tile = GameState.getInstance().getGrid().getTile(target.getPosition().getTilex(),
-					target.getPosition().getTiley());
-			tile.setUnit(null);
-			GameState.getInstance().getHumanPlayer().getMyUnits().remove(target);
-		}
+    	if (target.getHealth() == 0) {
+    		unitDeathAction(ref, target);
+    	}
+    	//set status
+    	unit.setExhausted(true);
+    }
 
-		BasicCommands.deleteUnit(ref, target);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+    /*
+     *  CounterAttack
+     */
+    public static void counterAttack(ActorRef ref, Unit unit, Unit target){
+    	int damageToTarget = unit.getAttack();
+    	int updatedTargetHealth = Math.max(target.getHealth() - damageToTarget, 0);
+    	target.setHealth(updatedTargetHealth);
+    	
+    	// Unit attack actions
+    	unitAttackAction(ref, unit, target);
 
-		// Check for End game - avatars dying
-		int aiAvatarID = GameState.getInstance().getAIPlayer().getAvatarID();
+    	//If died after counter-attack
+    	if(target.getHealth() == 0){
+    		unitDeathAction(ref, target);
+    	}
+    }
+
+    /*
+     *  UnitAttackAction
+     */
+    public static void unitAttackAction(ActorRef ref, Unit unit, Unit target) {
+    	//attack animation
+        BasicCommands.playUnitAnimation(ref, unit, UnitAnimationType.attack);
+        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+        // Update target's health
+        BasicCommands.setUnitHealth(ref, target, target.getHealth());
+        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+        
+        // Target plays the hit animation
+        BasicCommands.playUnitAnimation(ref,target,UnitAnimationType.hit);
+        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+        
+        // Check if avatar is attacked to trigger respective actions
+        GameLogic.reactToAvatarAttack(ref, target);
+    }
+
+    /*
+     *  UnitDeathAction
+     */
+    public static void unitDeathAction(ActorRef ref, Unit target) {
+    	// Target plays the death animation
+    	BasicCommands.playUnitAnimation(ref,target,UnitAnimationType.death);
+    	try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+    	// Remove Unit 
+    	if(!target.isHumanUnit()) {
+    		Tile tile = GameState.getInstance().getGrid().getTile(target.getPosition().getTilex(), target.getPosition().getTiley());
+    		tile.setUnit(null);
+    		GameState.getInstance().getAIPlayer().getMyUnits().remove(target);
+    	} else {
+    		Tile tile = GameState.getInstance().getGrid().getTile(target.getPosition().getTilex(), target.getPosition().getTiley());
+    		tile.setUnit(null);
+    		GameState.getInstance().getHumanPlayer().getMyUnits().remove(target);
+    	}
+
+    	BasicCommands.deleteUnit(ref,target);
+    	try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+
+    	// Check for End game - avatars dying
+    	int aiAvatarID = GameState.getInstance().getAIPlayer().getAvatarID();
 		int humanAvatarID = GameState.getInstance().getHumanPlayer().getAvatarID();
-		if (target.getId() == aiAvatarID || target.getId() == humanAvatarID) {
-			GameState.getInstance().setGameEnded(true);
-			BasicCommands.addPlayer1Notification(ref, "Game Over", 100);
-			return;
+    	if (target.getId() == aiAvatarID || target.getId() == humanAvatarID) {
+    		// We should maintain some state in GameState--- to not allow other actions after end turn
+    		// <TO DO>
+    		BasicCommands.addPlayer1Notification(ref, "Game Over", 100);
 		}
 
-		// Notify DeathWatchers
-		GameLogic.notifyDeathWatchers(ref);
-	}
+    	// Notify DeathWatchers
+    	GameLogic.notifyDeathWatchers(ref);
+    }
 
-	/**
-	 * UnitMoveAction
-	 * 
-	 * @param ref    (ActorRef)
-	 * @param unit   (Unit)
-	 * @param target (Unit)
-	 * 
-	 */
-	public static void unitMoveAttack(ActorRef ref, Unit unit, Unit target) {
-		// Move unit to a position adjacent to the target unit
-		Actions.moveToAdjacentPosition(ref, unit, TilesGenerator.getUnitTile(target));
-		// Perform attack after moving
-		unitAdjacentAttack(ref, unit, target);
-	}
+    /*
+     *  UnitMoveAction
+     */
+    public static void unitMoveAttack(ActorRef ref, Unit unit, Unit target){
+        // Move unit to a position adjacent to the target unit
+        Actions.moveToAdjacentPosition(ref, unit, target.getPosition());
+        //wait for move
+        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+        // Perform attack after moving
+        unitAdjacentAttack(ref, unit, target);
+    }
 
-	/**
-	 * MoveToAdjacentPosition
-	 * 
-	 * @param ref          (ActorRef)
-	 * @param unit         (Unit)
-	 * @param toAttackTile (Tile)
-	 * 
-	 */
-	public static void moveToAdjacentPosition(ActorRef ref, Unit unit, Tile toAttackTile) {
-		System.out.println("moveToAdjacentPosition");
-		List<Tile> myMovableTiles = TilesGenerator.getMovableTiles(unit);
-		List<Tile> getAdjacentTiles = TilesGenerator.getAdjacentTiles(toAttackTile);
-		// Find possible tile to move to attack
-		myMovableTiles.retainAll(getAdjacentTiles);
+    // Move the unit to the adjacent position
+    public static void moveToAdjacentPosition(ActorRef ref,Unit unit, Position targetPosition){
+        Tile adjacentPositionTile = findEmptyAdjacentTile(unit, targetPosition);
+        unitMove(ref,unit,adjacentPositionTile);
+        try {Thread.sleep(1000);} catch (InterruptedException e) {e.printStackTrace();}
+    }
 
-		// Move to one of the possible tiles
-		for (Tile tile : myMovableTiles) {
-			System.out.println("move to Tile");
-			unitMove(ref, unit, tile);
-			try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-			break;
-		}
-	}
+    /*
+     *  FindEmptyAdjacentTile for move and attack
+     */
+    public static Tile findEmptyAdjacentTile(Unit unit, Position target){
+    	
+    	GameState gameState = GameState.getInstance();
+    	// If the the target is forward or behind the unit
+    	int unitx = unit.getPosition().getTilex();
+    	int targetx = target.getTilex();
+    	
+    	Integer[][] offsets = new Integer[4][4];
+    	if ((unitx-targetx <  1)) {
+    		if (gameState.isCurrentPlayerHuman()) {
+    			// Target is in front
+    			// Define the relative offsets for adjacent positions
+    	        Integer[][] humanoffsets = {{-1, 0}, {-1, -1},{-1, 1}}; // adjacent tiles
+    	        offsets = humanoffsets;
+    		} else {
+    			// Define the relative offsets for adjacent positions
+    	        Integer[][] aioffsets = {{1, 0}, {1, -1}, {1, 1}}; // adjacent tiles
+    	        offsets = aioffsets;
+    		}
+    	} else {
+    		if (gameState.isCurrentPlayerHuman()) {
+    			// Define the relative offsets for adjacent positions
+    	        Integer[][] humanoffsets = {{1, 0}, {1, -1}, {1, 1}}; // adjacent tiles
+    	        offsets = humanoffsets;
+    		} else {
+    			// Define the relative offsets for adjacent positions
+    	        Integer[][] aioffsets = {{-1, 0}, {-1, -1},{-1, 1}}; // adjacent tiles
+    	        offsets = aioffsets;
+    		}
+    	}
 
-	/**
-	 * PlaceUnit
-	 * 
-	 * create the unit first
-	 * modify the tile and unit
-	 * check if it is the OpeningGambits
-	 * 
-	 * @param ref  (ActorRef)
-	 * @param tile (Tile)
-	 * 
-	 */
+        // Iterate through the offsets to check adjacent positions
+        for (Integer[] offset : offsets) {
+            int adjacentX = target.getTilex() + offset[0];
+            int adjacentY = target.getTiley() + offset[1];
+            if (TilesGenerator.isValidTile(adjacentX, adjacentY)) {
+                // Get the tile corresponding to the adjacent position
+                Tile adjacentTile = GameState.getInstance().getGrid().getTile(adjacentX, adjacentY);
+                // Check if the tile is empty (not occupied by any unit)
+                if (adjacentTile != null && adjacentTile.getUnit() == null) {
+                    return adjacentTile;
+                }
+            }
+        }
+        return null; // No empty adjacent tile found
+    }
+    
+	//create the unit first
+	//modify the tile and unit
+	//check if it is the OpeningGambits
+	//call repositionHandCards
+	//delete one card in hand
 	public static void placeUnit(ActorRef ref, Tile tile) {
+		
 		GameState gameState = GameState.getInstance();
 		// Get clicked card
 		Card card = gameState.getClickedCard();
-
+		
 		// Create Unit and associate it with the tile
 		Unit unit = GameLogic.getCreatureObject(card);
-
-		// Add unit to the player's allied units
 		gameState.getCurrentPlayer().addUnits(unit);
 		GameLogic.associateUnitWithTile(unit, tile);
-
-		// Do the front-end communication
-		EffectAnimation summonEffect = BasicObjectBuilders.loadEffect(StaticConfFiles.f1_summon);
-		BasicCommands.placeUnit(ref, unit, tile, summonEffect);
-
+		
 		if (unit instanceof OpeningGambit) {
 			// OpeningGambits when they summoned they trigger some effects
-			((OpeningGambit) unit).reactToUnitsSummon(ref, tile);
+			((OpeningGambit) unit).reactToUnitsSummon();
 		}
-	}
-
-	/**
-	 * PlaceWraithlings
-	 * 
-	 * @param ref  (ActorRef)
-	 * @param tile (Tile)
-	 * 
-	 */
-	public static void placeWraithling(ActorRef ref, Tile tile) {
-		// Create wraithlings
-		Unit unit = Wraithlings.createWraithling();
-
-		// Add wraithling to the player's allied units
-		GameState.getInstance().getCurrentPlayer().addUnits(unit);
-		GameLogic.associateUnitWithTile(unit, tile);
 
 		// Do the front-end communication
-		EffectAnimation summonEffect = BasicObjectBuilders.loadEffect(StaticConfFiles.f1_warithsummon);
-		BasicCommands.placeUnit(ref, unit, tile, summonEffect);
+		BasicCommands.drawUnit(ref, unit, tile);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		
+		EffectAnimation summonEffect = BasicObjectBuilders.loadEffect(StaticConfFiles.f1_summon);
+		BasicCommands.playEffectAnimation(ref, summonEffect, tile);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		
+		BasicCommands.setUnitAttack(ref, unit, unit.getAttack());
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(ref, unit, unit.getHealth());
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 	}
+
 
 }
