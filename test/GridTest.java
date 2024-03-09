@@ -28,5 +28,13 @@ public class GridTest {
 		assertEquals("Test tile position", null, myGrid.getTile(10,3));
 		assertEquals("Test tile position", null, myGrid.getTile(1,6));
 	}
+	
+	@Test
+	public void testGetters() {
+		Grid myGrid = BasicObjectBuilders.loadGrid();
+		assertEquals("Test grid x size getter", 9, myGrid.getGridXSize());
+		assertEquals("Test grid y size getter", 5, myGrid.getGridYSize());
+
+	}
 
 }

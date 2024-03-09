@@ -125,7 +125,7 @@ public class TilesGenerator {
 		unitTiles.removeAll(getFriendlyUnitTiles());
 		unitTiles.removeAll(getEnemyUnitTiles());
 
-		// Remove dupilcates if any
+		// Remove duplicates if any
 		Set<Tile> set = new HashSet<Tile>(unitTiles);
 		unitTiles.clear(); // Clear the original list
 		unitTiles.addAll(set);
