@@ -19,6 +19,7 @@ public class AIPlayer extends Player {
 
     public AIPlayer() {
         super();
+		this.setCardManager(new CardManager(false));
     }
 
     public AIPlayer(int health, int mana) {

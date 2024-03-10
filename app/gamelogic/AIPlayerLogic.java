@@ -8,13 +8,17 @@ import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.spell.Spell;
 import utils.TilesGenerator;
-import gamelogic.AIScoring;
 
 import java.util.*;
 
 public class AIPlayerLogic implements Runnable {
     GameState gameState;
     ActorRef out;
+
+    public AIPlayerLogic(GameState gameState, ActorRef out) {
+        this.gameState = gameState;
+        this.out = out;
+    }
 
 
     @Override
@@ -23,10 +27,13 @@ public class AIPlayerLogic implements Runnable {
 
         //First check all the units on board and find their best action
         ArrayList<Unit> myUnits = aiPlayer.getMyUnits();
+
         for (Unit unit : myUnits) {
             Map<Tile, Unit> bestActionForUnit = AIScoring.getBestActionForUnit(unit);
             Tile moveTarget = (Tile) bestActionForUnit.keySet().toArray()[0];
+            // System.out.println(moveTarget.getTilex() + "----" + moveTarget.getTiley());
             if (moveTarget != TilesGenerator.getUnitTile(unit)) {
+                //System.out.println((out == null) + "----" + (unit == null) + "------" + (moveTarget == null));
                 Actions.unitMove(out, unit, moveTarget);
             }
             Unit attackTarget = bestActionForUnit.get(moveTarget);
@@ -36,19 +43,24 @@ public class AIPlayerLogic implements Runnable {
         }
 
         List<Card> myHandCards = aiPlayer.getMyHandCards();
+        for (Card card : myHandCards) {
+            System.out.println(card.getCardname() + "---------" + card.getUnitConfig());
+
+        }
+
         //high-mana-cost card first
         myHandCards.sort(Comparator.comparingInt(Card::getManacost));
 
         //First try to use spell cards as many as possible
         for (Card card : myHandCards) {
-            if (aiPlayer.getMana() <= card.getManacost()) {
-                break;
-            }
             if (card instanceof Spell) {
+                System.out.println(card.getCardname());
+                if (aiPlayer.getMana() <= card.getManacost()) {
+                    break;
+                }
                 Tile bestTargetForSpellCard = AIScoring.findBestTargetForSpellCard((Spell) card);
                 if (bestTargetForSpellCard != null) {
-                	// Uncomment after you implement the overloaded method
-                    // ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
+                    ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
                 }
             }
         }
@@ -56,14 +68,15 @@ public class AIPlayerLogic implements Runnable {
         //Then try to use creature cards as many as possible
 
         for (Card card : myHandCards) {
-            if (aiPlayer.getMana() <= card.getManacost()) {
-                break;
-            }
-            if (!(card instanceof Spell)) {
+            if (card.isCreature()) {
+                System.out.println(card.getCardname() + "is not a spell");
+                if (aiPlayer.getMana() <= card.getManacost()) {
+                    break;
+                }
+                System.out.println(card.getCardname());
                 Tile bestPositionForSummonCreature = AIScoring.findBestPositionForSummonCreature(card);
                 if (bestPositionForSummonCreature != null) {
-                	// Uncomment after you implement the overloaded method
-                    // ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
+                    ProcessTileClicked.processCardUse(out, bestPositionForSummonCreature, card);
                 }
             }
         }
