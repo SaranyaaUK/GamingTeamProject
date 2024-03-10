@@ -78,7 +78,15 @@ public class CardManager {
     public List<Card> getHandCards() {
         return this.myHandCards;
     }
-    
+
+    /**
+     * setHandCards
+     * 
+     *  @return list of cards in hand
+     */
+    public void setHandCards(List<Card> cards) {
+       this.myHandCards = cards;
+    }
     /**
      * deleteHandCardAt
      *  

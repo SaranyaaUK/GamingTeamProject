@@ -80,9 +80,9 @@ public class Actions {
 			currentPlayer.getCardManager().drawCardFromDeck(1);
 		}
 
-		if (gameState.isCurrentPlayerHuman()) {
-			BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
-		}
+//		if (gameState.isCurrentPlayerHuman()) {
+//			BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
+//		}
 
 		// Now based on the current player, get the next player and also set
 		// their mana in front-end
@@ -94,6 +94,7 @@ public class Actions {
 			nextPlayer = gameState.getHumanPlayer();
 			// Turn will be increased if the next player is a Human player
 			gameState.nextTurn();
+			BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
 		}
 
 		// Now switch players
@@ -201,6 +202,7 @@ public class Actions {
 	public static boolean checkDiagonalMovement(Unit unit, Tile tile) {
 		int unitx = unit.getPosition().getTilex();
 		int unity = unit.getPosition().getTiley();
+		System.out.println(tile.getTilex() + " " + tile.getTiley());
 		// Check if we are moving to diagonal tiles
 		if (Math.abs(unitx - tile.getTilex()) == 1 && Math.abs(unity - tile.getTiley()) == 1) {
 			// Check if vertical movement is needed first

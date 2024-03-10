@@ -6,12 +6,11 @@ package gamelogic;
  * actions and positions of units on the battlefield, guiding the AI's decision-making process to create challenging and
  * strategic gameplay. Each constant serves a specific purpose in the scoring algorithms, affecting how units are valued
  * based on their health, attack strength, positioning, and special abilities or conditions.
- *
  * Note: The values and structure outlined in this file are part of the open-source codebase for Duelyst.
  */
 
 
-public class Bounty {
+public class BOUNTY {
     // General
     public static final double UNIT_HP = 1.2;
     public static final double GENERAL_HP = 1.4;
@@ -56,4 +55,3 @@ public class Bounty {
 
 
 }
-

@@ -5,13 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import structures.GameState;
-import structures.basic.AIPlayer;
-import structures.basic.GameLogic;
-//import structures.basic.GameLogic;
-import structures.basic.Grid;
-import structures.basic.Player;
-import structures.basic.Tile;
-import structures.basic.Unit;
+import structures.basic.*;
 import utils.BasicObjectBuilders;
 
 /**

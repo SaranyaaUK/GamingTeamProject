@@ -30,11 +30,11 @@ public class OtherClicked implements EventProcessor {
 			return;
 		}
 
-		// For testing - remove this (using the other click as a way for ai to return
-		// the turn to the human player
-		if (!gameState.isCurrentPlayerHuman()) {
-			ProcessEndTurnClicked.processEndTurnClicked(out);
-		}
+//		// For testing - remove this (using the other click as a way for ai to return
+//		// the turn to the human player
+//		if (!gameState.isCurrentPlayerHuman()) {
+//			ProcessEndTurnClicked.processEndTurnClicked(out);
+//		}
 	}
 
 }
