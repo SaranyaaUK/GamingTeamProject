@@ -10,5 +10,5 @@ import akka.actor.ActorRef;
  */
 public interface DeathWatch {
 	// Method to be invoked to implement the actions to react to a unit's death
-	public void reactToDeath(ActorRef out);
+	void reactToDeath(ActorRef out);
 }

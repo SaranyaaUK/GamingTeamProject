@@ -1,16 +1,12 @@
 package structures;
 
+import structures.basic.*;
+import structures.basic.spell.Spell;
+import structures.basic.spell.WraithlingSwarm;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import structures.basic.Card;
-import structures.basic.Grid;
-import structures.basic.Player;
-import structures.basic.Tile;
-import structures.basic.Unit;
-import structures.basic.spell.Spell;
-import structures.basic.spell.WraithlingSwarm;
 
 public class GameState {
     public static final int INITIAL_HEALTH = 20;
@@ -18,7 +14,7 @@ public class GameState {
     public static final int INITIAL_ATTACK = 2;
     public static final int MAXIMUM_MANA = 9;
 
-    public boolean gameInitialised = false;
+    public boolean gameInitialised;
 
     private Grid grid; // Represents the game grid (Tiles on the board)
     private Player humanPlayer; // Human player
@@ -41,8 +37,8 @@ public class GameState {
         this.turn = 1; // Assuming the game starts with turn 0
         this.handPosition = -1;
         this.spellToCast = null;
-        this.highlightedFriendlyTiles = new HashSet<Tile>();
-        this.highlightedEnemyTiles = new HashSet<Tile>();
+        this.highlightedFriendlyTiles = new HashSet<>();
+        this.highlightedEnemyTiles = new HashSet<>();
         this.endTurnClicked = false;
         this.gameEnded = false;
     }
@@ -114,9 +110,6 @@ public class GameState {
         this.handPosition = handPosition;
     }
 
-    public void resetHandPosition() {
-        handPosition = -1;
-    }
 
     public boolean isCardClicked() {
         return this.handPosition != -1;
@@ -182,17 +175,6 @@ public class GameState {
         this.turn++;
     }
 
-    /*
-     *  swtichCurrentPlayer()
-     *  
-     */
-    public void switchCurrentPlayer() {
-        if (currentPlayer.equals(humanPlayer)) {
-            currentPlayer = AIPlayer;
-        } else {
-            currentPlayer = humanPlayer;
-        }
-    }
     
     /*
      *  isCurrentPlayerHuman()
@@ -212,9 +194,6 @@ public class GameState {
      */
     
     public boolean isSpellWraithlingSwarm() {
-    	if (!(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm)){
-    		return true;
-    	}
-    	return false;
+        return !(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm);
     }
 }

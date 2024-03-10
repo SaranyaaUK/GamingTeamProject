@@ -30,7 +30,7 @@ public class GloomChaser extends Unit implements OpeningGambit {
 		int tiley = tile.getTiley();
 		int behind;
 
-		Tile toSummonTile = null;
+		Tile toSummonTile;
 		if (gameState.isCurrentPlayerHuman()) {
 			behind = tilex - 1;
 			

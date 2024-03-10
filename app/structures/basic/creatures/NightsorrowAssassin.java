@@ -1,7 +1,5 @@
 package structures.basic.creatures;
 
-import java.util.List;
-
 import akka.actor.ActorRef;
 import commands.BasicCommands;
 import gamelogic.Actions;
@@ -9,6 +7,8 @@ import structures.GameState;
 import structures.basic.Tile;
 import structures.basic.Unit;
 import utils.TilesGenerator;
+
+import java.util.List;
 
 
 /*
@@ -35,7 +35,7 @@ public class NightsorrowAssassin extends Unit implements OpeningGambit {
 		List<Tile> enemyUnitsInAdjacentTiles = TilesGenerator.getAdjacentEnemyTiles(target);
 
 		// Eliminate enemy avatar
-		Unit avatar = null;
+		Unit avatar;
 		if (gameState.isCurrentPlayerHuman()) {
 			avatar = gameState.getAIPlayer().getAvatar();
 		} else {

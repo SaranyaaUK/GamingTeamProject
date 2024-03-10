@@ -12,5 +12,5 @@ import structures.basic.Tile;
 public interface OpeningGambit {
 	// Implement the effects to be triggred when a unit with this 
 	// ability is summoned on to the board
-	public void reactToUnitsSummon(ActorRef out, Tile tile);
+	void reactToUnitsSummon(ActorRef out, Tile tile);
 }

@@ -27,8 +27,8 @@ public class ShadowDancer extends Unit implements DeathWatch {
 		
 		// Access the enemy avatar and deal one 1 damage to it and 
 		// increase this unit's health to 1
-		Unit avatar = null;
-		Player player = null;
+		Unit avatar;
+		Player player;
 		if (gameState.isCurrentPlayerHuman()) {
 			player = gameState.getAIPlayer();			
 		} else {
