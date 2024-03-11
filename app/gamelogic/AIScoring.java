@@ -251,7 +251,7 @@ public class AIScoring {
         double score = 0;
         Tile humanAvatarTile = TilesGenerator.getUnitTile(humanAvatar);
         Tile AIAvatarTile = TilesGenerator.getUnitTile(AIAvatar);
-        score += getDistanceBetweenTiles(targetTile, AIAvatarTile) * getBountyfForDistanceFromMyGeneral(AIAvatar.getHealth());
+        score += getDistanceBetweenTiles(targetTile, AIAvatarTile) * getScoreForDistanceFromMyGeneral(AIAvatar.getHealth());
         score += getDistanceBetweenTiles(targetTile, humanAvatarTile) * BOUNTY.DISTANCE_FROM_OPPONENT_GENERAL;
         return score;
     }
