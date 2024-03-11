@@ -1,23 +1,20 @@
 package structures;
 
+import structures.basic.*;
+import structures.basic.spell.Spell;
+import structures.basic.spell.WraithlingSwarm;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import structures.basic.Card;
-import structures.basic.Grid;
-import structures.basic.Player;
-import structures.basic.Tile;
-import structures.basic.Unit;
-import structures.basic.spell.Spell;
 
 public class GameState {
     public static final int INITIAL_HEALTH = 20;
     public static final int INITIAL_MANA = 0;
     public static final int INITIAL_ATTACK = 2;
+    public static final int MAXIMUM_MANA = 9;
 
-    public boolean gameInitialised = false;
-    public boolean something = false;
+    public boolean gameInitialised;
 
     private Grid grid; // Represents the game grid (Tiles on the board)
     private Player humanPlayer; // Human player
@@ -30,16 +27,20 @@ public class GameState {
     private Set<Tile> highlightedFriendlyTiles;
     private Set<Tile> highlightedEnemyTiles;
     private static GameState gameState;
+    private boolean endTurnClicked;
+    private boolean gameEnded;
 
-    // Constructors
+	// Constructors
     private GameState() {
         // Initialize default values
         this.gameInitialised = false;
         this.turn = 1; // Assuming the game starts with turn 0
         this.handPosition = -1;
         this.spellToCast = null;
-        this.highlightedFriendlyTiles = new HashSet<Tile>();
-        this.highlightedEnemyTiles = new HashSet<Tile>();
+        this.highlightedFriendlyTiles = new HashSet<>();
+        this.highlightedEnemyTiles = new HashSet<>();
+        this.endTurnClicked = false;
+        this.gameEnded = false;
     }
 
     public static GameState getInstance() {
@@ -54,7 +55,7 @@ public class GameState {
         return gameInitialised;
     }
 
-    public void setGameInitialised(boolean gameInitialized) {
+    public void setGameInitialised(boolean gameInitialised) {
         this.gameInitialised = gameInitialised;
     }
 
@@ -109,9 +110,6 @@ public class GameState {
         this.handPosition = handPosition;
     }
 
-    public void resetHandPosition() {
-        handPosition = -1;
-    }
 
     public boolean isCardClicked() {
         return this.handPosition != -1;
@@ -119,6 +117,9 @@ public class GameState {
 
     public Card getClickedCard() {
         int handPosition = this.getHandPosition();
+        if (handPosition < 0) {
+        	return null;
+        }
         return this.getCurrentPlayer().getMyHandCards().get(handPosition - 1);
     }
 
@@ -156,31 +157,56 @@ public class GameState {
         this.highlightedEnemyTiles.addAll(toHighlightTiles);
     }
 
-    // Method to increment the turn
+    public boolean isEndTurnClicked() {
+		return endTurnClicked;
+	}
+
+	public void setEndTurnClicked(boolean endTurnClicked) {
+		this.endTurnClicked = endTurnClicked;
+	}
+
+    public boolean isGameEnded() {
+		return gameEnded;
+	}
+
+	public void setGameEnded(boolean gameEnded) {
+		this.gameEnded = gameEnded;
+	}
+
+	// Method to increment the turn
     public void nextTurn() {
         this.turn++;
-        // Additional logic for turn transition can be added here
-        // For example, updating player mana based on the new turn
-        updatePlayersMana();
     }
 
-    // method to update players' mana at the start of each turn
-    private void updatePlayersMana() {
-        if (humanPlayer != null) {
-            humanPlayer.setMana(this.turn + 1); // Assuming mana is turn + 1
-        }
-        if (AIPlayer != null) {
-            AIPlayer.setMana(this.turn + 1);
-        }
-    }
-
+    /*
+     *  swtichCurrentPlayer()
+     *  
+     */
     public void switchCurrentPlayer() {
-        if (currentPlayer == humanPlayer) {
+        if (currentPlayer.equals(humanPlayer)) {
             currentPlayer = AIPlayer;
         } else {
             currentPlayer = humanPlayer;
         }
     }
-
-
+    
+    /*
+     *  isCurrentPlayerHuman()
+     * 
+     *  @return boolean - True if current player is human
+     */
+    public boolean isCurrentPlayerHuman() {
+    	return currentPlayer.equals(humanPlayer);
+    }
+    
+    /*
+     *  isSpellWraithlingSwarm
+     *  
+     *  @return boolean - True if current spell to be casted is 
+     *  WraithlingSwarm
+     *  
+     */
+    public boolean isSpellWraithlingSwarm() {
+        return !(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm);
+    }
 }

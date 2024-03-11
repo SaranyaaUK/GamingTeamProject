@@ -1,21 +1,23 @@
 package structures.basic;
 
-import utils.BasicObjectBuilders;
-import java.io.File;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import utils.BasicObjectBuilders;
+
+import java.io.File;
 
 /**
+ * Grid.java
+ * <p>
  * Represents the game board as a grid of tiles.
  */
 public class Grid {
     Tile[][] boardTiles; // A 2D array to hold the tiles
     @JsonIgnore
     private static ObjectMapper mapper = new ObjectMapper(); // Jackson Java Object Serializer, is used to read java
-                                                             // objects from a file
+    // objects from a file
     int gridxsize;
     int gridysize;
     int gridmargin;
@@ -25,11 +27,11 @@ public class Grid {
     // Constructor for Grid
     @JsonCreator
     public Grid(@JsonProperty("boardTiles") Tile[][] boardTiles,
-            @JsonProperty("gridxsize") int gridxsize,
-            @JsonProperty("gridysize") int gridysize,
-            @JsonProperty("gridmargin") int gridmargin,
-            @JsonProperty("gridTopLeftx") int gridTopLeftx,
-            @JsonProperty("gridTopLefty") int gridTopLefty) {
+                @JsonProperty("gridxsize") int gridxsize,
+                @JsonProperty("gridysize") int gridysize,
+                @JsonProperty("gridmargin") int gridmargin,
+                @JsonProperty("gridTopLeftx") int gridTopLeftx,
+                @JsonProperty("gridTopLefty") int gridTopLefty) {
         this.boardTiles = boardTiles;
         this.gridxsize = gridxsize;
         this.gridysize = gridysize;
@@ -48,7 +50,7 @@ public class Grid {
             for (int y = 0; y < gridysize; y++) {
                 // Initialize each Tile. Customize as necessary, for example, setting textures
                 // or properties.
-                boardTiles[x][y] = BasicObjectBuilders.loadTile(x+1, y+1);
+                boardTiles[x][y] = BasicObjectBuilders.loadTile(x + 1, y + 1);
             }
         }
     }
@@ -81,9 +83,9 @@ public class Grid {
     /**
      * Construct a grid from the configuration file
      * parameters.
-     * 
+     *
      * @param configFile
-     * @return
+     * @return Grid
      */
     public static Grid constructGrid(String configFile) {
 
@@ -96,6 +98,14 @@ public class Grid {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public int getGridXSize() {
+        return this.gridxsize;
+    }
+
+    public int getGridYSize() {
+        return this.gridysize;
     }
 
 }

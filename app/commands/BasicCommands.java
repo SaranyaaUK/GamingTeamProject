@@ -10,12 +10,15 @@ import play.libs.Json;
 import structures.GameState;
 import structures.basic.Card;
 import structures.basic.EffectAnimation;
+import structures.basic.GameLogic;
 import structures.basic.Grid;
 import structures.basic.Player;
 import structures.basic.Tile;
 import structures.basic.Unit;
 import structures.basic.UnitAnimation;
 import structures.basic.UnitAnimationType;
+import utils.BasicObjectBuilders;
+import utils.StaticConfFiles;
 import utils.TilesGenerator;
 
 
@@ -451,6 +454,14 @@ public class BasicCommands {
 				position++; // Increment position for next card
 		}
 	}
+	
+	public static void deleteHandCards(List<Card> handCards, ActorRef out) {
+		int position = 1; // Start position from 1
+		for (Card card : handCards) {
+				BasicCommands.deleteCard(out, position);
+				position++; // Increment position for next card
+		}
+	}
 
 	// Helper methods for other front-end communication
 	
@@ -466,26 +477,14 @@ public class BasicCommands {
 		Unit humanAvatar = humanPlayer.getAvatar();
 		Unit aiAvatar = aiPlayer.getAvatar();
 
-		// Draw units (avatars) for both players
-		BasicCommands.drawUnit(out, humanAvatar, gameState.getGrid().getTile(2, 3));
-		BasicCommands.drawUnit(out, aiAvatar, gameState.getGrid().getTile(8, 3));
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
-		// Set the avatars' health to 20 for both players
-		BasicCommands.setUnitHealth(out, humanAvatar, GameState.INITIAL_HEALTH);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
-		BasicCommands.setUnitHealth(out, aiAvatar, GameState.INITIAL_HEALTH);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
-
-		// Set the avatars' attack, 
-		BasicCommands.setUnitAttack(out, humanAvatar, GameState.INITIAL_ATTACK);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		// Place human avatar
+		EffectAnimation summonEffect = BasicObjectBuilders.loadEffect(StaticConfFiles.f1_summon);
+		BasicCommands.placeUnit(out, humanAvatar, gameState.getGrid().getTile(2, 3), summonEffect);
 		
-		BasicCommands.setUnitAttack(out, aiAvatar, GameState.INITIAL_ATTACK);
-		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+		// Place AI avatar
+		BasicCommands.placeUnit(out, aiAvatar, gameState.getGrid().getTile(8, 3), summonEffect);
 
-		// Communicate the updated health and mana values to the front-end
+		// Communicate the updated health and mana values to the front-end for the player 
 		BasicCommands.setPlayer1Health(out, humanPlayer);
 		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
 
@@ -495,17 +494,22 @@ public class BasicCommands {
 		BasicCommands.setPlayer1Mana(out, currentPlayer);
 	}
 	
-	/*
+	/**
 	 *  Dehighlight any highlighted card
 	 *  Used in highlightsAfterCardClick method
+	 *  
+	 *  @param out (ActorRef)
+	 *  
 	 */
     public static void dehighlightCards(ActorRef out) {
     	GameState gameState = GameState.getInstance();
     	BasicCommands.drawHandCards(gameState.getCurrentPlayer().getMyHandCards(), out, 0);
     }
     
-    /*
+    /**
      *  Highlight clicked cards
+     *  
+     *  @param out (ActorRef)
      */
     public static void highlightClickedCard(ActorRef out) {
     	
@@ -516,8 +520,10 @@ public class BasicCommands {
 		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
     }
 
-    /*
-     * Highlight of tiles
+    /**
+     * 	Highlight of tiles
+     * 
+     *  @param out (ActorRef)
      */
     public static void highlightTiles(ActorRef out) {
     	
@@ -535,8 +541,11 @@ public class BasicCommands {
     	}
     }
     
-    /*
+    /**
      *  Dehighlight tiles
+     *  
+     *  @param out (ActorRef)
+     *  
      */
     public static void dehighlightTiles(ActorRef out) {
     	
@@ -553,4 +562,58 @@ public class BasicCommands {
     		try {Thread.sleep(2);} catch (InterruptedException e) {e.printStackTrace();}
     	}
     }
+    
+    /**
+     *  placeUnit
+     *  
+     *  Unit placement actions
+     *  
+     *  @param out (ActorRef)
+     *  @param unit (Unit)
+     *  @param tile (Tile)
+     *  @param summonEffect (EffectAnimation)
+     *  
+     */
+	public static void placeUnit(ActorRef out, Unit unit, Tile tile, EffectAnimation summonEffect) {
+		// Do the front-end communication
+		BasicCommands.drawUnit(out, unit, tile);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.playEffectAnimation(out, summonEffect, tile);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitAttack(out, unit, unit.getAttack());
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		BasicCommands.setUnitHealth(out, unit, unit.getHealth());
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+	}
+	
+	/**
+	 *  attackUnit
+	 *  
+	 *  Takes care of unit attack actions 
+	 *  
+	 *  @param ref (ActorRef)
+	 *  @param unit (Unit)
+	 *  @param target (Unit)
+	 *
+	 */
+	
+	public static void attackUnit(ActorRef ref, Unit unit, Unit target) {
+		// Update the Player's health if the avatar was target
+		GameLogic.updatePlayerHealth(ref, target);
+
+		//attack animation
+		BasicCommands.playUnitAnimation(ref, unit, UnitAnimationType.attack);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// Update target's health
+		BasicCommands.setUnitHealth(ref, target, target.getHealth());
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+
+		// Target plays the hit animation
+		BasicCommands.playUnitAnimation(ref,target,UnitAnimationType.hit);
+		try {Thread.sleep(500);} catch (InterruptedException e) {e.printStackTrace();}
+	}
 }
