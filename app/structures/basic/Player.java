@@ -25,6 +25,10 @@ public class Player {
     // Player's units
     private List<Unit> myUnits;
 
+    public Player() {
+        this(true);
+    }
+    
     public Player(boolean isHumanPlayer) {
         this(GameState.INITIAL_HEALTH, GameState.INITIAL_MANA);
         setAvatar(loadAvatar(isHumanPlayer));

@@ -43,7 +43,7 @@ public class NightsorrowAssassin extends Unit implements OpeningGambit {
 		}
 		// Except avatar other units can be destroyed when it is summoned
 		enemyUnitsInAdjacentTiles.removeAll(TilesGenerator.getAvatarTile(avatar));
-		
+
 		// Actual effect
 		if (!enemyUnitsInAdjacentTiles.isEmpty()) {
 			for(Tile myTile: enemyUnitsInAdjacentTiles) {

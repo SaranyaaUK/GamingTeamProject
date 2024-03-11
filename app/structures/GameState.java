@@ -117,6 +117,9 @@ public class GameState {
 
     public Card getClickedCard() {
         int handPosition = this.getHandPosition();
+        if (handPosition < 0) {
+        	return null;
+        }
         return this.getCurrentPlayer().getMyHandCards().get(handPosition - 1);
     }
 
@@ -175,6 +178,17 @@ public class GameState {
         this.turn++;
     }
 
+    /*
+     *  swtichCurrentPlayer()
+     *  
+     */
+    public void switchCurrentPlayer() {
+        if (currentPlayer.equals(humanPlayer)) {
+            currentPlayer = AIPlayer;
+        } else {
+            currentPlayer = humanPlayer;
+        }
+    }
     
     /*
      *  isCurrentPlayerHuman()
@@ -192,7 +206,6 @@ public class GameState {
      *  WraithlingSwarm
      *  
      */
-    
     public boolean isSpellWraithlingSwarm() {
         return !(getSpellToCast() == null) && (getSpellToCast() instanceof WraithlingSwarm);
     }

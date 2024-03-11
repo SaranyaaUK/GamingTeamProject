@@ -54,6 +54,7 @@ public class AIPlayerLogic {
                 Tile bestTargetForSpellCard = AIScoring.findBestTargetForSpellCard(spell);
                 if (bestTargetForSpellCard != null) {
                     System.out.println("Cast spell" + "---------" + card.getCardname());
+                    System.out.println("Casted spell on" + "-----------"+ bestTargetForSpellCard.getTilex() + " "+ bestTargetForSpellCard.getTiley());
                     gameState.setHandPosition(myHandCards.indexOf(card) + 1);
                     ProcessTileClicked.processCardUse(out, bestTargetForSpellCard, card);
                 }

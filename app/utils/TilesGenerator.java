@@ -146,7 +146,7 @@ public class TilesGenerator {
 
         List<Tile> unitTiles = getAdjacentTiles(unit);
 
-        // If front, behind and above and below tile are free I highlight the
+        // If front, behind, above, below tile are free we highlight the
         // second cardinal tile
         int front, behind, above, below;
         above = tiley - 1;
@@ -223,12 +223,12 @@ public class TilesGenerator {
      * movable tiles because of obstructions around the unit that has to move.
      *
      * @param unitTiles(List<Tile>)
-     * @param tilex                 (int)
-     * @param tiley                 (int)
-     * @param above                 (int)
-     * @param below                 (int)
-     * @param front                 (int)
-     * @param behind                (int)
+     * @param tilex (int)
+     * @param tiley (int)
+     * @param above (int)
+     * @param below (int)
+     * @param front (int)
+     * @param behind (int)
      * @return List<Tile>
      */
     public static List<Tile> removeDiagonalTiles(List<Tile> unitTiles, int tilex, int tiley, int above, int below, int front, int behind) {
@@ -325,6 +325,8 @@ public class TilesGenerator {
                 unitTiles.add(tile);
             }
         }
+        
+        unitTiles.remove(myTile);
 
         return unitTiles;
     }

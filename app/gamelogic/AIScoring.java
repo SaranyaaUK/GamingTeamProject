@@ -101,17 +101,13 @@ public class AIScoring {
      */
     public static Tile findBestPositionForSummonCreature(Card card) {
         Unit unit = GameLogic.getCreatureObject(card);
-        //System.out.println("findBestPositionForSummonCreature " + unit.getId());
         List<Tile> tilesToSummon = TilesGenerator.getTilesToSummon();
-        //System.out.println(tilesToSummon.size());
         Tile bestPosition = null;
         if (!tilesToSummon.isEmpty()) {
             double maxScore = -2000;
             for (Tile tile : tilesToSummon) {
                 double currentScore = AIScoring.getScoreForPosition(unit, tile);
-                // System.out.println("findBestPositionForSummonCreature score" +currentScore );
                 if (currentScore > maxScore) {
-                    //System.out.println("now I find a place" +tile );
                     maxScore = currentScore;
                     bestPosition = tile;
                 }
@@ -135,7 +131,7 @@ public class AIScoring {
         List<Tile> targets = spell.getTargetTilesToHighlight();
         Tile bestTarget = null;
         if (!targets.isEmpty()) {
-            double maxScore = Double.MIN_VALUE;
+            double maxScore = -2000;
             for (Tile tile : targets) {
                 double currentScore = getScoreForSpellTarget(spell, tile);
                 if (currentScore > maxScore) {
@@ -158,10 +154,9 @@ public class AIScoring {
      * @return A score reflecting the strategic value of placing the unit on the specified tile.
      */
     public static double getScoreForPosition(Unit unit, Tile position) {
-        //System.out.println("AIScoring getScoreForPosition: " + unit.getId() + position.getTilex() + position.getTiley());
         double score = 0;
         GameState gameState = GameState.getInstance();
-        score += getScoreForProximityToAvatars(position, gameState.getHumanPlayer().getAvatar(), gameState.getAIPlayer().getAvatar());
+        score += getScoreForProximityToAvatars(unit, position, gameState.getHumanPlayer().getAvatar(), gameState.getAIPlayer().getAvatar());
         if (unit instanceof Provoke) {
             score += getBountyForProvokePosition(position);
         }
@@ -215,27 +210,41 @@ public class AIScoring {
      * @param AIAvatar    The AI player's avatar.
      * @return A double representing the calculated score based on proximity to avatars.
      */
-    private static double getScoreForProximityToAvatars(Unit unit, Unit humanAvatar, Unit AIAvatar) {
+    private static double getScoreForProximityToAvatars(Unit unit, Tile position, Unit humanAvatar, Unit AIAvatar) {
         double score = 0;
-        Tile target = TilesGenerator.getUnitTile(unit);
+        double scoreToMyGeneral=0;
+        double scoreToEnemyGeneral=0;
+        double scoreToMyGeneralModifier=1;
+        double scoreToEnemyGeneralModifier=1;//used for special units' choice
+        boolean unitIsAvatar = unit.equals(humanAvatar) || unit.equals(AIAvatar);
+
         Tile humanAvatarTile = TilesGenerator.getUnitTile(humanAvatar);
         Tile AIAvatarTile = TilesGenerator.getUnitTile(humanAvatar);
         if (unit.isHumanUnit()) {
-            score += getDistanceBetweenTiles(target, humanAvatarTile) * getBountyfForDistanceFromMyGeneral(humanAvatar.getHealth());
-            score += getDistanceBetweenTiles(target, AIAvatarTile) * BOUNTY.DISTANCE_FROM_OPPONENT_GENERAL;
+        	scoreToMyGeneral += getScoreForDistanceFromMyGeneral(humanAvatar.getHealth())/(getDistanceBetweenTiles(position, humanAvatarTile)+1);
+            scoreToEnemyGeneral += BOUNTY.DISTANCE_FROM_MY_GENERAL_FACTOR/ getDistanceBetweenTiles(position, AIAvatarTile);
         } else {
-            score += getDistanceBetweenTiles(target, AIAvatarTile) * getBountyfForDistanceFromMyGeneral(AIAvatar.getHealth());
-            score += getDistanceBetweenTiles(target, humanAvatarTile) * BOUNTY.DISTANCE_FROM_OPPONENT_GENERAL;
+        	if(getScoreForUnit(unit) < getScoreForUnit(humanAvatar) && unitIsAvatar){
+                //if avatar's Hp, ATK less than enemy, keep distance
+                scoreToEnemyGeneralModifier = -1;
+            }
+            scoreToMyGeneral += getScoreForDistanceFromMyGeneral(AIAvatar.getHealth())/(getDistanceBetweenTiles(position, AIAvatarTile) + 1) ;
+            scoreToEnemyGeneral += BOUNTY.DISTANCE_FROM_MY_GENERAL_FACTOR / getDistanceBetweenTiles(position, humanAvatarTile);
         }
+        if(unit instanceof Zeal){
+            scoreToEnemyGeneralModifier= 2 - 1.2/unit.getAttack();
+        }
+
+        score = scoreToEnemyGeneral * scoreToEnemyGeneralModifier + scoreToMyGeneral * scoreToMyGeneralModifier;
+
         return score;
     }
 
     private static double getScoreForProximityToAvatars(Tile targetTile, Unit humanAvatar, Unit AIAvatar) {
-       // System.out.println("AIScoring getScoreForProximityToAvatars");
         double score = 0;
         Tile humanAvatarTile = TilesGenerator.getUnitTile(humanAvatar);
         Tile AIAvatarTile = TilesGenerator.getUnitTile(AIAvatar);
-        score += getDistanceBetweenTiles(targetTile, AIAvatarTile) * getBountyfForDistanceFromMyGeneral(AIAvatar.getHealth());
+        score += getDistanceBetweenTiles(targetTile, AIAvatarTile) * getScoreForDistanceFromMyGeneral(AIAvatar.getHealth());
         score += getDistanceBetweenTiles(targetTile, humanAvatarTile) * BOUNTY.DISTANCE_FROM_OPPONENT_GENERAL;
         return score;
     }
@@ -249,8 +258,8 @@ public class AIScoring {
      * @param myGeneralHealth The health of the avatar (general) belonging to the unit's side.
      * @return A double representing the distance-based modifier for the unit's score, adjusted by the avatar's health.
      */
-    private static double getBountyfForDistanceFromMyGeneral(int myGeneralHealth) {
-        return BOUNTY.DISTANCE_FROM_MY_GENERAL * (BOUNTY.DISTANCE_FROM_MY_GENERAL_FACTOR / myGeneralHealth);
+    private static double getScoreForDistanceFromMyGeneral(int myGeneralHealth) {
+    	return 10 + BOUNTY.DISTANCE_FROM_MY_GENERAL_FACTOR / myGeneralHealth;
     }
 
 
@@ -291,19 +300,17 @@ public class AIScoring {
         GameState gameState = GameState.getInstance();
         double score = 0;
 
-        double targetScore = 0.05 * getScoreForUnit(targetUnit) * getScoreForPosition(targetUnit, TilesGenerator.getUnitTile(targetUnit));
+        double targetScore = 0.02* getScoreForUnit(targetUnit) * getScoreForPosition(targetUnit, TilesGenerator.getUnitTile(targetUnit));
         int targetHealth = targetUnit.getHealth();
         int remainingHealth = ATK - targetHealth;
         boolean isAvatar = (targetUnit == gameState.getHumanPlayer().getAvatar() || targetUnit == gameState.getAIPlayer().getAvatar());
         int hpLoss = Math.min(ATK, targetHealth);
 
-
-        score += targetScore * BOUNTY.DAMAGE_PER_UNIT_SCORE;
+        score += targetScore * BOUNTY.DAMAGE_PER_UNIT_SCORE * hpLoss;
 
         // prefer damage that may be lethal
         if (remainingHealth <= 0) {
             score += targetScore * BOUNTY.REMOVAL_PER_UNIT_SCORE;
-            score += hpLoss * BOUNTY.DAMAGE_PER_UNIT_SCORE;
             //calculate score for deathwatch
             List<Unit> humanUnits = gameState.getHumanPlayer().getMyUnits();
             for (Unit unit : humanUnits) {

@@ -75,15 +75,17 @@ public class Actions {
 
         // Draw a card from deck
         if (currentPlayer.isMyDeckEmpty()) {
-            gameState.setGameEnded(true);
-            BasicCommands.addPlayer1Notification(out, "Game Over", 100);
+        	gameState.setGameEnded(true);
+        	if (gameState.isCurrentPlayerHuman()) {
+        		BasicCommands.addPlayer1Notification(out, "Game Over --- You lose ----", 10);
+        	} else {
+        		BasicCommands.addPlayer1Notification(out, "Game Over --- You won ----", 10);
+        	}          
         } else {
-            currentPlayer.getCardManager().drawCardFromDeck(1);
+        	currentPlayer.getCardManager().drawCardFromDeck(1);
         }
 
-//		if (gameState.isCurrentPlayerHuman()) {
         BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
-//		}
 
         // Now based on the current player, get the next player and also set
         // their mana in front-end
@@ -95,7 +97,6 @@ public class Actions {
             nextPlayer = gameState.getHumanPlayer();
             // Turn will be increased if the next player is a Human player
             gameState.nextTurn();
-            //  BasicCommands.drawHandCards(gameState.getHumanPlayer().getMyHandCards(), out, 0); // pass the mode
         }
 
         // Now switch players
@@ -117,7 +118,7 @@ public class Actions {
         // All unit's isMoved and isAttacked need to be set to false,
         // except for stunned unit.
         if (unit.isStunned()) {
-            unit.setExhausted(true);
+            unit.setExhausted(false);
             unit.setStunned(false);
         } else {
             unit.setExhausted(false);
@@ -369,7 +370,7 @@ public class Actions {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
+        
         // Remove Unit
         if (!target.isHumanUnit()) {
             Tile tile = GameState.getInstance().getGrid().getTile(target.getPosition().getTilex(),
@@ -390,12 +391,24 @@ public class Actions {
             e.printStackTrace();
         }
 
+        // Dehighlight tiles after unit's death
+        BasicCommands.dehighlightTiles(ref);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // Check for End game - avatars dying
         int aiAvatarID = GameState.getInstance().getAIPlayer().getAvatarID();
         int humanAvatarID = GameState.getInstance().getHumanPlayer().getAvatarID();
         if (target.getId() == aiAvatarID || target.getId() == humanAvatarID) {
             GameState.getInstance().setGameEnded(true);
-            BasicCommands.addPlayer1Notification(ref, "Game Over", 100);
+            if (GameState.getInstance().getHumanPlayer().getHealth() == 0) {
+            	BasicCommands.addPlayer1Notification(ref, "Game Over --- You lose ----", 10);
+            } else {
+            	BasicCommands.addPlayer1Notification(ref, "Game Over --- You won ----", 10);
+            }
             return;
         }
 

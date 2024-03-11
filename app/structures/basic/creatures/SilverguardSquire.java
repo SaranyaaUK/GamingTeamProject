@@ -43,19 +43,23 @@ public class SilverguardSquire extends Unit implements OpeningGambit {
             behind = tilex + 1;
         }
 
-        // Check for unit in front of the owning player's avatar
+        // Check for unit in front of the owning player's avatar - only if it is allied unit apply the effect
         Unit unit;
         if (TilesGenerator.isValidTile(front, tiley) && (myGrid.getTile(front, tiley).getUnit() != null)) {
             // Front
             unit = myGrid.getTile(front, tiley).getUnit();
-            summonEffect(out, unit);
+            if (!unit.isHumanUnit()) {
+            	summonEffect(out, unit);
+            } 
         }
 
         // Check for unit behind the owning player's avatar
         if (TilesGenerator.isValidTile(behind, tiley) && (myGrid.getTile(behind, tiley).getUnit() != null)) {
             // Behind
             unit = myGrid.getTile(behind, tiley).getUnit();
-            summonEffect(out, unit);
+        	if (!unit.isHumanUnit()) {
+            	summonEffect(out, unit);
+            }
         }
     }
 

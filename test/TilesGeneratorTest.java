@@ -162,7 +162,7 @@ public class TilesGeneratorTest {
 
 		// Switch player
 		gameState.switchCurrentPlayer();
-		System.out.println(TilesGenerator.getTilesToSummon().size());
+
 		// 8 around avatar and 6 around the ai unit
 		assertEquals("The summoning tiles should be 14", 14, TilesGenerator.getTilesToSummon().size());
 	}
@@ -224,8 +224,27 @@ public class TilesGeneratorTest {
 		assertEquals("There is one enemy unit in an adjacent tile", 1, TilesGenerator.getAdjacentEnemyTiles(unit1).size());
 	}
 
-//	<TO DO>
-//	Provoke unit test
-//	YoungFlamewingTest
+	@Test
+	public void testHasProvokeUnitAround() {
+		// Unit 1 
+		Unit unit1 = GameLogic.getCreatureObject(humanPlayer.getCardManager().getMyDeck().get(0));
+		GameLogic.associateUnitWithTile(unit1, board.getTile(5, 3));
+		humanPlayer.addUnits(unit1);
 
+		// Enemy Provoke Unit
+		Unit aiUnit1 = GameLogic.getCreatureObject(aiPlayer.getCardManager().getMyDeck().get(1));
+		GameLogic.associateUnitWithTile(aiUnit1, board.getTile(5, 2));
+		aiPlayer.addUnits(aiUnit1);
+		
+		assertTrue("Has Provoke unit adjacent",TilesGenerator.hasProvokeUnitAround(unit1));		
+		
+		// Remove the provoke unit and add another unit
+		aiPlayer.getMyUnits().remove(aiPlayer.getMyUnits().size()-1);
+
+		aiUnit1 = GameLogic.getCreatureObject(aiPlayer.getCardManager().getMyDeck().get(0));
+		GameLogic.associateUnitWithTile(aiUnit1, board.getTile(5, 2));
+		aiPlayer.addUnits(aiUnit1);
+
+		assertFalse("No Provoke unit around",TilesGenerator.hasProvokeUnitAround(unit1));
+	}
 }

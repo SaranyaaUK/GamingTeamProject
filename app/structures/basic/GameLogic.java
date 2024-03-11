@@ -157,7 +157,7 @@ public class GameLogic {
             // If AI avatar takes attack, units with Zeal power reacts
             List<Unit> aiUnits = gameState.getAIPlayer().getMyUnits();
             for (Unit unit : aiUnits) {
-                if (gameState.getAIPlayer() instanceof Zeal) {
+                if (unit instanceof Zeal) {
                     ((Zeal) unit).applyZeal(out);
                 }
             }
@@ -210,7 +210,9 @@ public class GameLogic {
         GameState gameState = GameState.getInstance();
         // Delete in front-end
         CardManager myCardManager = gameState.getCurrentPlayer().getCardManager();
-        BasicCommands.deleteHandCards(myCardManager.getHandCards(), out);
+        if (gameState.isCurrentPlayerHuman()) {
+        	BasicCommands.deleteHandCards(myCardManager.getHandCards(), out);
+        }
         // Update gameState
         myCardManager.deleteHandCardAt(gameState.getHandPosition() - 1);
         // Redraw Cards

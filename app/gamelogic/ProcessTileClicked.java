@@ -68,27 +68,32 @@ public class ProcessTileClicked {
      * @param tile (Tile)
      */
     private static void processUnitClick(ActorRef out, Tile tile) {
-        if (tile.getUnit().isExhausted()) {
-            BasicCommands.addPlayer1Notification(out, "This unit is exhausted.", 1);
-        } else {
-            // Update the current clicked unit
-            gameState.setCurrentUnit(tile.getUnit());
+    	if (tile.getUnit().isStunned()) {
+    		BasicCommands.addPlayer1Notification(out, "This unit is stunned.", 1);
+    	}
+    	else if (tile.getUnit().isExhausted()) {
+    		BasicCommands.addPlayer1Notification(out, "This unit is exhausted.", 1);
+    	} else {
+    		// Update the current clicked unit
+    		gameState.setCurrentUnit(tile.getUnit());
 
-            // Set the appropriate tiles to highlight
-            if (tile.getUnit().isMoved()) {
-                // If selected unit has moved already just get adjacent enemy units
-                gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
-            } else {
-                // If selected unit has not moved already - get possible move and attack tiles too.
-                if (!TilesGenerator.hasProvokeUnitAround(gameState.getCurrentUnit())) {
-                    if (!TilesGenerator.getMovableTiles(gameState.getCurrentUnit()).isEmpty()) {
-                        gameState.setHighlightedFriendlyTiles(TilesGenerator.getMovableTiles(gameState.getCurrentUnit()));
-                    }
-                }
-                if (!TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()).isEmpty()) {
-                    gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
-                }
-            }
+    		// Set the appropriate tiles to highlight
+    		if (tile.getUnit().isMoved()) {
+    			// If selected unit has moved already just get adjacent enemy units
+    			if (!TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()).isEmpty()) {
+    				gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
+    			}
+    		} else {
+    			// If selected unit has not moved already - get possible move and attack tiles too.
+    			if (!TilesGenerator.hasProvokeUnitAround(gameState.getCurrentUnit())) {
+    				if (!TilesGenerator.getMovableTiles(gameState.getCurrentUnit()).isEmpty()) {
+    					gameState.setHighlightedFriendlyTiles(TilesGenerator.getMovableTiles(gameState.getCurrentUnit()));
+    				}
+    			}
+    			if (!TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()).isEmpty()) {
+    				gameState.setHighlightedEnemyTiles(TilesGenerator.getAttackableTiles(gameState.getCurrentUnit()));
+    			}
+    		}
             BasicCommands.highlightTiles(out);
         }
     }
