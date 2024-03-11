@@ -231,7 +231,7 @@ public class AIScoring {
     }
 
     private static double getScoreForProximityToAvatars(Tile targetTile, Unit humanAvatar, Unit AIAvatar) {
-        System.out.println("AIScoring getScoreForProximityToAvatars");
+       // System.out.println("AIScoring getScoreForProximityToAvatars");
         double score = 0;
         Tile humanAvatarTile = TilesGenerator.getUnitTile(humanAvatar);
         Tile AIAvatarTile = TilesGenerator.getUnitTile(AIAvatar);
@@ -291,7 +291,7 @@ public class AIScoring {
         GameState gameState = GameState.getInstance();
         double score = 0;
 
-        double targetScore = getScoreForUnit(targetUnit) * getScoreForPosition(targetUnit, TilesGenerator.getUnitTile(targetUnit));
+        double targetScore = 0.05 * getScoreForUnit(targetUnit) * getScoreForPosition(targetUnit, TilesGenerator.getUnitTile(targetUnit));
         int targetHealth = targetUnit.getHealth();
         int remainingHealth = ATK - targetHealth;
         boolean isAvatar = (targetUnit == gameState.getHumanPlayer().getAvatar() || targetUnit == gameState.getAIPlayer().getAvatar());
